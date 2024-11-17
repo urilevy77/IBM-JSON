@@ -1,22 +1,26 @@
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 
-# Load the model and tokenizer
+# Load the tokenizer and model
 model_id = "mistralai/Mixtral-8x7B-Instruct-v0.1"
 tokenizer = AutoTokenizer.from_pretrained(model_id)
-model = AutoModelForCausalLM.from_pretrained(model_id, device_map="auto")
+model = AutoModelForCausalLM.from_pretrained(model_id, device_map="auto", torch_dtype="auto")
 
-# Define the messages for the conversation
-messages = [
-    {"role": "user", "content": "What is your favourite condiment?"},
-    {"role": "assistant", "content": "Well, I'm quite partial to a good squeeze of fresh lemon juice. It adds just the right amount of zesty flavour to whatever I'm cooking up in the kitchen!"},
-    {"role": "user", ''"content": "Do you have mayonnaise recipes?"}
-]
+# Create a text generation pipeline
+text_gen_pipeline = pipeline(
+    "text-generation",
+    model=model,
+    tokenizer=tokenizer,
+    max_length=512,
+    temperature=0.7,  # Adjust for randomness in responses
+    top_p=0.95,       # Adjust for nucleus sampling
+)
 
-# Tokenize the conversation
-inputs = tokenizer(messages, return_tensors="pt", padding=True, truncation=True).to("cuda")
+# Define a simple prompt
+prompt = "You are a helpful assistant. Answer the following question:\nWhat is your favorite programming language and why?"
 
-# Generate the response
-outputs = model.generate(inputs['input_ids'], max_new_tokens=20)
+# Generate a response
+response = text_gen_pipeline(prompt, max_new_tokens=100)
 
-# Decode the response
-print(tokenizer.decode(outputs[0], skip_special_tokens=True))
+# Print the response
+print("Response from Mixtral model:")
+print(response[0]['generated_text'])
