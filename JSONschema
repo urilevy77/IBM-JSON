@@ -1,0 +1,73 @@
+{
+  "title": "Science Fiction Voyage",
+  "type": "object",
+  "properties": {
+    "shipName": {
+      "type": "string",
+      "title": "Name of the Star Ship"
+    },
+    "captain": {
+      "type": "object",
+      "title": "Captain's Information"
+    },
+    "crew": {
+      "type": "array",
+      "title": "Crew Members",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "species": {
+            "type": "string",
+            "title": "Species"
+          },
+          "age": {
+            "type": "number",
+            "title": "Age"
+          },
+          "homePlanet": {
+            "type": "string",
+            "title": "Home Planet",
+            "conditions": {
+              "if": {
+                "properties": {
+                  "species": {
+                    "const": "human"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "homePlanet": {
+                    "const": "Earth"
+                  }
+                }
+              }
+            }
+          },
+          "technicalSkills": {
+            "type": "array",
+            "title": "Technical Skills",
+            "if": {
+              "properties": {
+                "species": {
+                  "const": "alien"
+                }
+              }
+            },
+            "then": {
+              "items": {
+                "type": "string",
+                "title": "Technical Skill: Alien"
+              }
+            },
+            "else": {
+              "items": {
+                "type": "string",
+                "title": "Technical Skill: Human"
+              }
+            }
+          }

@@ -40,7 +40,7 @@ second_response = client.text_generation(
     model="mistralai/Mixtral-8x7B-Instruct-v0.1",
     temperature=0.8,
     max_new_tokens=500,
-    seed=41,
+    seed=42,
     return_full_text=False,
 )
 
