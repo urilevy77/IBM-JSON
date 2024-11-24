@@ -39,15 +39,33 @@ def generate_json(schema_path, prompt):
         print(response)
 
 
+def error_generator(json_path, prompt):
+    with open(json_path, 'r') as file:
+        content = file.read()
+        response = client.text_generation(
+            prompt=prompt + " " + content,
+            model="mistralai/Mixtral-8x7B-Instruct-v0.1",
+            temperature=0.8,
+            max_new_tokens=500,
+            seed=44,
+            return_full_text=False,
+        )
+        print(response)
+
+
 if __name__ == "__main__":
     client = InferenceClient()
     # second_prompt = """ Generate JSON Schema using the above Structure format and the following theme: """
     json_prompt = "You are an AI designed to generate JSON instances based on a provided JSON schema. The schema defines " \
-             "the structure, types, and constraints for JSON objects. Using the following schema, create valid " \
-             "JSON instances that follow the rules specified. Ensure the JSON instances are diverse and cover " \
-             "different variations allowed by the schema. "
-    generate_json("JSONschema", prompt)
-
+                  "the structure, types, and constraints for JSON objects. Using the following schema, create valid " \
+                  "JSON instances that follow the rules specified. Ensure the JSON instances are diverse and cover " \
+                  "different variations allowed by the schema. "
+    #generate_json("JSONschema", json_prompt)
+    json_errors_prompt = """You are an AI designed to create a single invalid JSON example based on a provided JSON 
+    schema. Your task is to introduce exactly one error in the JSON instance. This error can be related to: 
+    A missing required field.
+    use the following JSON: """
+    error_generator("JSON",json_errors_prompt)
     # read_file_sequentially("storyStructures","themes",second_prompt)
     # system = """ "story" can be defined as a structured representation of information that outlines a specific theme or subject matter. each "story" consists set of attributes that provide detailed data points related to that theme. The attributes serve to describe various aspects of the story, allowing for a comprehensive understanding of the subject.
     # """
