@@ -1,0 +1,26 @@
+
+    "Story 1: A flat structure"
+    In this story, the protagonist is on a journey to find a hidden treasure. The structure is flat, with a list of items that the protagonist collects along the journey. The items are a map, a compass, a golden key, a shovel, a backpack, a water canteen, a rope, a flashlight, and a first-aid kit.
+
+    "Story 2: A nested structure"
+    In this story, the protagonist discovers a series of hidden messages. The structure is nested, with each message containing a clue to find the next one. The messages are hidden in a statue, a locket, a diary, a painting, a sheet of music, and a crossword puzzle.
+
+    "Story 3: A hierarchical structure"
+    In this story, the protagonist discovers a family tree. The structure is hierarchical, with each level of the family tree representing a generation. The levels are great-grandparents, grandparents, parents, and children.
+
+    "Story 4: A structure with relationships between fields"
+    In this story, the protagonist finds a map with locations and their corresponding events. The structure includes relationships between fields, with each location having a corresponding event linked to a specific emotion.
+
+    "Story 5: A structure with optional or conditional fields"
+    In this story, the protagonist receives a letter with optional details about a trip. The structure includes optional fields, with each field having a probability of rain.
+
+    "Story 6: A structure that includes arrays of objects"
+    In this story, the protagonist finds a list of ingredients for a magical potion. The structure includes arrays of objects, with each ingredient having a corresponding magical property.
+
+    "Story 7: A structure with conditional fields"
+    In this story, the protagonist discovers a series of riddles. The structure includes conditional fields, with each riddle having a corresponding answer.
+
+    "Story 8: A structure with a complex nested structure"
+    In this story, the protagonist receives a list of instructions. The structure is complex and nested, with each instruction having a corresponding action.
+
+    "Story 9: A structure
