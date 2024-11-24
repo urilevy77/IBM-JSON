@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
     "Story 1: A flat structure"
     In this story, the protagonist is on a journey to find a hidden treasure. The structure is flat, with a list of items that the protagonist collects along the journey. The items are a map, a compass, a golden key, a shovel, a backpack, a water canteen, a rope, a flashlight, and a first-aid kit.
@@ -24,3 +25,15 @@
     In this story, the protagonist receives a list of instructions. The structure is complex and nested, with each instruction having a corresponding action.
 
     "Story 9: A structure
+=======
+1. Flat Layout: A simple list of attributes with no nesting or hierarchies.
+2. Nested Objects: A primary attribute with several sub-attributes, creating a nested structure.
+3. Hierarchical Data: A parent-child relationship between attributes, creating a tree-like structure.
+4. Optional Fields: A structure with optional fields that may or may not be included in the data.
+5. Conditional Fields: A structure where certain fields are only included if specific conditions are met.
+6. Arrays of Objects: A structure that includes an array (list) of similar objects, allowing for multiple instances of related data.
+7. Dependent Values: A structure where the value of one field affects the available options in another field.
+8. Graph-like Structure: A set of nodes connected by edges, representing relationships between attributes.
+9. Hybrid Structure: A combination of multiple structure styles, such as a flat layout with nested objects.
+10. Recursive Structure: A structure where one attribute can contain another instance of the same structure, allowing for self-reference and potentially infinite nesting.
+>>>>>>> origin/main
