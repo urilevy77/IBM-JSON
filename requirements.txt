@@ -3,3 +3,4 @@ langchain
 python-dotenv
 torch
 accelerate>=0.26.0
+huggingface_hub
