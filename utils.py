@@ -1,5 +1,6 @@
 import requests
 
+
 def read_url():
     """Reads the JSON Schema Draft-07 meta-schema from its URL."""
     SCHEMA_FOR_JSON_SCHEMA = "http://json-schema.org/draft-07/schema#"
