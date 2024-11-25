@@ -1,72 +1,49 @@
 from huggingface_hub import InferenceClient
-
-SYSTEM_PROMPT = """ "story" can be defined as a structured representation of information that outlines a specific
-      theme or subject matter. each "story" consists set of attributes that provide detailed data points related to that theme.
-       The attributes serve to describe various aspects of the story, allowing for a comprehensive understanding of the subject.
-     """
-JSON_SCHEMA_PROMPT = """ Generate JSON Schema using the above Structure format and the following theme: """
-JSON_PROMPT = "You are an AI designed to generate JSON instances based on a provided JSON schema. The schema defines " \
-              "the structure, types, and constraints for JSON objects. Using the following schema, create valid " \
-              "JSON instances that follow the rules specified. Ensure the JSON instances are diverse and cover " \
-              "different variations allowed by the schema. "
-JSON_ERROR_PROMPT = """You are an AI designed to create a single invalid JSON example based on a provided JSON 
-    schema. Your task is to introduce exactly one error in the JSON instance. This error can be related to: 
-    A missing required field.
-    use the following JSON: """
-MODEL = "mistralai/Mixtral-8x7B-Instruct-v0.1"
-
-STORY_STRUCTURE_PATH = "storyStructures"
-THEME_PATH = "themes"
+from generators import json_schema_generator, json_generator, error_generator
+from schema_validation import json_schema_validator
+from utils import read_url
 
 
-def json_schema_generator(story_structure, theme):
-    second_response = client.text_generation(
-        prompt=story_structure + JSON_SCHEMA_PROMPT + theme,
-        model=MODEL,
-        temperature=0.8,
-        max_new_tokens=500,
-        seed=42,
-        return_full_text=False,
-    )
-    print(second_response)
 
 
-def json_generator(schema_path):
-    with open(schema_path, 'r') as file:
-        content = file.read()
-        response = client.text_generation(
-            prompt=JSON_PROMPT + " " + content,
-            model=MODEL,
-            temperature=0.8,
-            max_new_tokens=500,
-            seed=44,
-            return_full_text=False,
-            \
 
 
-        )
-        print(response)
-
-
-def error_generator(json_path):
-    with open(json_path, 'r') as file:
-        content = file.read()
-        response = client.text_generation(
-            prompt=JSON_ERROR_PROMPT + " " + content,
-            model=MODEL,
-            temperature=0.8,
-            max_new_tokens=500,
-            seed=44,
-            return_full_text=False,
-        )
-        print(response)
 
 
 if __name__ == "__main__":
     client = InferenceClient()
-
-    with open(STORY_STRUCTURE_PATH, 'r') as structure_file:
-        for structure in structure_file:
-            with open(THEME_PATH, 'r') as theme_file:
-                for theme in theme_file:
-                    json_schema_generator(structure, theme)
+    # # for creating JSON schema out of story structure and theme
+    # with open(STORY_STRUCTURE_PATH, 'r') as structure_file:
+    #     for structure in structure_file:
+    #         with open(THEME_PATH, 'r') as theme_file:
+    #             for theme in theme_file:
+    #                 json_schema_generator(structure, theme)
+    #
+    # # creating JSONs out of JSON schema
+    # with open(JSON_SCHEMA_PATH, 'r') as json_schema_file:
+    #     schema = json_schema_file.read()
+    #     json_generator(schema)
+    #
+    # # creating errors on JSONs
+    # with open(JSON_PATH, 'r') as json_file:
+    #     json = json_file.read()
+    #     error_generator(json)
+    # print(type(read_url()))
+    # with open(JSON_PATH) as file:
+    #     json_try = (file.read())
+    # with open(JSON_SCHEMA_PATH) as schema_file:
+    #     schema_try = schema_file.read()
+    # #print(json_try)
+    # #print(schema_try)
+    # validate(instance=json_try, schema=schema_try)
+    # schema = {
+    #     "$schema": "http://json-schema.org/draft-07/schema#",
+    #     "type": "object",
+    #     "properties": {
+    #         "name": {"type": "string"},
+    #         "age": {"type": "integer", "minimum": 0},
+    #         "email": {"type": "string", "format": "email"}
+    #     },
+    #     "required": ["name", "age"]
+    # }
+    # json_schema_validator(schema)
