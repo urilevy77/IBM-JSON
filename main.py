@@ -1,6 +1,7 @@
 from huggingface_hub import InferenceClient
 import json
-from config import JSON_PATH, JSON_SCHEMA_PATH
+
+from config import JSON_PATH, JSON_SCHEMA_PATH, STORY_STRUCTURE_PATH, THEME_PATH
 from generators import json_schema_generator, json_generator, error_generator
 from validation import json_schema_validator, json_validator
 from utils import read_url
@@ -18,16 +19,16 @@ if __name__ == "__main__":
     # with open(JSON_SCHEMA_PATH, 'r') as json_schema_file:
     #     schema = json_schema_file.read()
     #     json_generator(schema)
-    #
+
     # # creating errors on JSONs
-    # with open(JSON_PATH, 'r') as json_file:
-    #     json = json_file.read()
-    #     error_generator(json)
+    with open(JSON_PATH, 'r') as json_file:
+        json = json_file.read()
+        error_generator(json)
     # print(type(read_url()))
-    with open(JSON_PATH) as file:
-        json_try = (file.read())
-    with open(JSON_SCHEMA_PATH) as schema_file:
-        schema_try = schema_file.read()
+    # with open(JSON_PATH) as file:
+    #     json_try = (file.read())
+    # with open(JSON_SCHEMA_PATH) as schema_file:
+    #     schema_try = schema_file.read()
     # #print(json_try)
     # #print(schema_try)
     # validate(instance=json_try, schema=schema_try)
@@ -44,4 +45,4 @@ if __name__ == "__main__":
     # json_schema_validator(schema)
 # JSON_SCHEMA_PATH = "JSONschema"
 # JSON_PATH = "JSON"
-    json_validator(json.loads(json_try), json.loads(schema_try))
+    #json_validator(json.loads(json_try), json.loads(schema_try))

@@ -1,4 +1,6 @@
 import json
+from json.decoder import JSONDecodeError
+
 from config import MODEL
 from prompts import *
 from validation import json_schema_validator
@@ -48,8 +50,12 @@ def json_schema_generator(story_structure, story_theme):
 
     # Extract and print the assistant's reply
     schema_str = second_response.get("choices", [{}])[0].get("message", {}).get("content", "")
-    generated_schema = json.loads(schema_str)
-    json_schema_validator(generated_schema)
+    try:
+        generated_schema = json.loads(schema_str)
+        if json_schema_validator(generated_schema):
+            print(schema_str)
+    except JSONDecodeError as e:
+        print("schema not valid")
 
 
 def json_generator(json_schema):
@@ -61,11 +67,7 @@ def json_generator(json_schema):
         },
         {
             "role": "user",
-            "content": f"This is a JSON schema: {json_schema}"
-        },
-        {
-            "role": "user",
-            "content": f"{JSON_PROMPT}"
+            "content": f"This is a JSON schema:\n {json_schema}\n {JSON_PROMPT}"
         }
     ]
 
@@ -82,17 +84,6 @@ def json_generator(json_schema):
     json_instances = response.get("choices", [{}])[0].get("message", {}).get("content", "")
     print(json_instances)
 
-
-# def json_generator(json_schema):
-#     response = CLIENT.text_generation(
-#         prompt=f"{JSON_PROMPT} {json_schema}",
-#         model=MODEL,
-#         temperature=0.8,
-#         max_new_tokens=500,
-#         seed=44,
-#         return_full_text=False,
-#     )
-#     print(response)
 
 def error_generator(json_without_error):
     """Generates an invalid JSON instance by introducing a single error using chat completion."""
