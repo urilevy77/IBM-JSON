@@ -1,13 +1,18 @@
-from prompts import JSON_SCHEMA_PROMPT, JSON_PROMPT, JSON_ERROR_PROMPT, VALID_SCHEMA_PROMPT
-from schema_validation import json_schema_validator
 import json
+from config import MODEL
+from prompts import *
+from validation import json_schema_validator
+from huggingface_hub import InferenceClient
+
+CLIENT = InferenceClient()
+
 
 def json_schema_generator(story_structure, story_theme):
     # Chat-style input with roles
     chat_input = [
         {
             "role": "system",
-            "content": "You are an assistant designed to generate JSON schemas based on given story structures and themes."
+            "content": SCHEMA_SYSTEM_PROMPT
         },
         {
             "role": "user",
@@ -33,7 +38,7 @@ def json_schema_generator(story_structure, story_theme):
     ]
 
     # Call the chat completion API
-    second_response = client.chat_completion(
+    second_response = CLIENT.chat_completion(
         messages=chat_input,
         model=MODEL,
         temperature=0.8,
@@ -48,25 +53,82 @@ def json_schema_generator(story_structure, story_theme):
 
 
 def json_generator(json_schema):
-    response = client.text_generation(
-        prompt=f"{JSON_PROMPT} {json_schema}",
+    """Generates JSON instances from a given schema using chat completion."""
+    chat_input = [
+        {
+            "role": "system",
+            "content": JSON_GENERATOR_SYSTEM_PROMPT
+        },
+        {
+            "role": "user",
+            "content": f"This is a JSON schema: {json_schema}"
+        },
+        {
+            "role": "user",
+            "content": f"{JSON_PROMPT}"
+        }
+    ]
+
+    # Call the chat completion API
+    response = CLIENT.chat_completion(
+        messages=chat_input,
         model=MODEL,
         temperature=0.8,
-        max_new_tokens=500,
+        max_tokens=500,
         seed=44,
-        return_full_text=False,
     )
-    print(response)
 
+    # Extract and print the assistant's reply
+    json_instances = response.get("choices", [{}])[0].get("message", {}).get("content", "")
+    print(json_instances)
+
+
+# def json_generator(json_schema):
+#     response = CLIENT.text_generation(
+#         prompt=f"{JSON_PROMPT} {json_schema}",
+#         model=MODEL,
+#         temperature=0.8,
+#         max_new_tokens=500,
+#         seed=44,
+#         return_full_text=False,
+#     )
+#     print(response)
 
 def error_generator(json_without_error):
-    response = client.text_generation(
-        prompt=f"{JSON_ERROR_PROMPT} {json_without_error}",
+    """Generates an invalid JSON instance by introducing a single error using chat completion."""
+    chat_input = [
+        {
+            "role": "system",
+            "content": JSON_ERROR_SYSTEM_PROMPT
+        },
+        {
+            "role": "user",
+            "content": f"{JSON_ERROR_PROMPT} {json_without_error} "
+        }
+    ]
+
+    # Call the chat completion API
+    response = CLIENT.chat_completion(
+        messages=chat_input,
         model=MODEL,
         temperature=0.8,
-        max_new_tokens=500,
+        max_tokens=500,
         seed=44,
-        return_full_text=False,
     )
-    print(response)
 
+    # Extract and print the assistant's reply
+    invalid_json_instance = response.get("choices", [{}])[0].get("message", {}).get("content", "")
+    print(invalid_json_instance)
+
+# def error_generator(json_without_error):
+#     response = CLIENT.text_generation(
+#         prompt=f"{JSON_ERROR_PROMPT} {json_without_error}",
+#         model=MODEL,
+#         temperature=0.8,
+#         max_new_tokens=500,
+#         seed=44,
+#         return_full_text=False,
+#     )
+#     print(response)
+
+# \n\n{json.dumps(json_without_error, indent=2)}
