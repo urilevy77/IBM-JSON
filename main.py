@@ -6,43 +6,44 @@ SYSTEM_PROMPT = """ "story" can be defined as a structured representation of inf
      """
 JSON_SCHEMA_PROMPT = """ Generate JSON Schema using the above Structure format and the following theme: """
 JSON_PROMPT = "You are an AI designed to generate JSON instances based on a provided JSON schema. The schema defines " \
-                  "the structure, types, and constraints for JSON objects. Using the following schema, create valid " \
-                  "JSON instances that follow the rules specified. Ensure the JSON instances are diverse and cover " \
-                  "different variations allowed by the schema. "
+              "the structure, types, and constraints for JSON objects. Using the following schema, create valid " \
+              "JSON instances that follow the rules specified. Ensure the JSON instances are diverse and cover " \
+              "different variations allowed by the schema. "
 JSON_ERROR_PROMPT = """You are an AI designed to create a single invalid JSON example based on a provided JSON 
     schema. Your task is to introduce exactly one error in the JSON instance. This error can be related to: 
     A missing required field.
     use the following JSON: """
 MODEL = "mistralai/Mixtral-8x7B-Instruct-v0.1"
 
-def json_schema_generator(file_path, theme_path):
-    with open(file_path, 'r') as file:
-        for line in file:
-            structure = line.strip()
-            with open(theme_path, 'r') as theme_file:
-                for item in theme_file:
-                    theme = item.strip()
-                    second_response = client.text_generation(
-                        prompt=structure + JSON_SCHEMA_PROMPT + theme,
-                        model=MODEL,
-                        temperature=0.8,
-                        max_new_tokens=500,
-                        seed=42,
-                        return_full_text=False,
-                    )
-                    print(second_response)
+STORY_STRUCTURE_PATH = "storyStructures"
+THEME_PATH = "themes"
+
+
+def json_schema_generator(story_structure, theme):
+    second_response = client.text_generation(
+        prompt=story_structure + JSON_SCHEMA_PROMPT + theme,
+        model=MODEL,
+        temperature=0.8,
+        max_new_tokens=500,
+        seed=42,
+        return_full_text=False,
+    )
+    print(second_response)
 
 
 def json_generator(schema_path):
     with open(schema_path, 'r') as file:
         content = file.read()
         response = client.text_generation(
-            prompt= JSON_PROMPT + " " + content,
+            prompt=JSON_PROMPT + " " + content,
             model=MODEL,
             temperature=0.8,
             max_new_tokens=500,
             seed=44,
             return_full_text=False,
+            \
+
+
         )
         print(response)
 
@@ -64,4 +65,8 @@ def error_generator(json_path):
 if __name__ == "__main__":
     client = InferenceClient()
 
-
+    with open(STORY_STRUCTURE_PATH, 'r') as structure_file:
+        for structure in structure_file:
+            with open(THEME_PATH, 'r') as theme_file:
+                for theme in theme_file:
+                    json_schema_generator(structure, theme)
