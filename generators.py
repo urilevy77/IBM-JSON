@@ -3,7 +3,7 @@ from json.decoder import JSONDecodeError
 
 from config import MODEL
 from prompts import *
-from validation import json_schema_validator
+from validation import json_schema_validator, json_validator
 from huggingface_hub import InferenceClient
 
 CLIENT = InferenceClient()
@@ -53,12 +53,12 @@ def json_schema_generator(story_structure, story_theme):
     try:
         generated_schema = json.loads(schema_str)
         if json_schema_validator(generated_schema):
-            print(schema_str)
+            return schema_str
     except JSONDecodeError as e:
-        print("schema not valid")
+        return None
 
 
-def json_generator(json_schema):
+def json_generator(json_schema, json_seed):
     """Generates JSON instances from a given schema using chat completion."""
     chat_input = [
         {
@@ -77,20 +77,26 @@ def json_generator(json_schema):
         model=MODEL,
         temperature=0.8,
         max_tokens=500,
-        seed=44,
+        seed=json_seed,
     )
 
     # Extract and print the assistant's reply
-    json_instances = response.get("choices", [{}])[0].get("message", {}).get("content", "")
-    print(json_instances)
+    json_instance = response.get("choices", [{}])[0].get("message", {}).get("content", "")
+    try:
+        generated_json = json.loads(json_instance)
+        generated_schema = json.loads(json_schema)
+        if json_validator(generated_json, generated_schema):
+            return json_instance
+    except JSONDecodeError as e:
+        return None
 
 
-def error_generator(json_without_error):
+def error_generator(json_without_error, error_type):
     """Generates an invalid JSON instance by introducing a single error using chat completion."""
     chat_input = [
         {
             "role": "system",
-            "content": JSON_ERROR_SYSTEM_PROMPT
+            "content": f"{JSON_ERROR_SYSTEM_PROMPT} {error_type}"
         },
         {
             "role": "user",
@@ -109,7 +115,7 @@ def error_generator(json_without_error):
 
     # Extract and print the assistant's reply
     invalid_json_instance = response.get("choices", [{}])[0].get("message", {}).get("content", "")
-    print(invalid_json_instance)
+    return invalid_json_instance
 
 # def error_generator(json_without_error):
 #     response = CLIENT.text_generation(

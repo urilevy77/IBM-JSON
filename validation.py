@@ -12,7 +12,7 @@ def json_schema_validator(schema):
 def json_validator(json, schema):
     try:
         validate(json, schema)
-        print("The JSON is valid.")
+        return True
     except exceptions.SchemaError as e:
-        print("The JSON is invalid:")
-        print(e)
+        return False
+

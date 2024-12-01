@@ -1,19 +1,23 @@
 from huggingface_hub import InferenceClient
 import json
 
-from config import JSON_PATH, JSON_SCHEMA_PATH, STORY_STRUCTURE_PATH, THEME_PATH
+from config import JSON_PATH,  STORY_STRUCTURE_PATH, THEME_PATH
 from generators import json_schema_generator, json_generator, error_generator
 from validation import json_schema_validator, json_validator
-from utils import read_url
+from utils import read_url, insert_schemas_to_arr, SCHEMAS_ARRAY, insert_json_to_arr, JSON_ARR_OF_ARR
 
 if __name__ == "__main__":
     client = InferenceClient()
     # # for creating JSON schema out of story structure and theme
-    # with open(STORY_STRUCTURE_PATH, 'r') as structure_file:
-    #     for structure in structure_file:
-    #         with open(THEME_PATH, 'r') as theme_file:
-    #             for theme in theme_file:
-    #                 json_schema_generator(structure, theme)
+    with open(STORY_STRUCTURE_PATH, 'r') as structure_file:
+        for structure in structure_file:
+            with open(THEME_PATH, 'r') as theme_file:
+                for theme in theme_file:
+                    insert_schemas_to_arr(structure, theme)
+
+    for schema in SCHEMAS_ARRAY:
+        insert_json_to_arr(schema, 2)
+        arr = JSON_ARR_OF_ARR
     #
     # # creating JSONs out of JSON schema
     # with open(JSON_SCHEMA_PATH, 'r') as json_schema_file:
@@ -21,9 +25,9 @@ if __name__ == "__main__":
     #     json_generator(schema)
 
     # # creating errors on JSONs
-    with open(JSON_PATH, 'r') as json_file:
-        json = json_file.read()
-        error_generator(json)
+    # with open(JSON_PATH, 'r') as json_file:
+    # json = json_file.read()
+    # error_generator(json)
     # print(type(read_url()))
     # with open(JSON_PATH) as file:
     #     json_try = (file.read())
@@ -45,4 +49,4 @@ if __name__ == "__main__":
     # json_schema_validator(schema)
 # JSON_SCHEMA_PATH = "JSONschema"
 # JSON_PATH = "JSON"
-    #json_validator(json.loads(json_try), json.loads(schema_try))
+# json_validator(json.loads(json_try), json.loads(schema_try))

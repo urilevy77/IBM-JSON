@@ -1,5 +1,2 @@
 Flat Layout: A simple list of attributes with no nesting or hierarchies.
 Nested Objects: A primary attribute with several sub-attributes, creating a nested structure.
-Hierarchical Data: A parent-child relationship between attributes, creating a tree-like structure.
-Optional Fields: A structure with optional fields that may or may not be included in the data.
-Conditional Fields: A structure where certain fields are only included if specific conditions are met.

@@ -29,6 +29,5 @@ JSON_PROMPT = " Using the above schema, create a valid " \
               "or additional text." \
               "Choose the size randomly, without mentioning which one you chose."
 JSON_ERROR_SYSTEM_PROMPT = ("You are an AI designed to create invalid JSON instances based on a provided JSON schema. "
-                            "Your task is to introduce exactly one error in the JSON instance. The error can be "
-                            "related to missing required fields, incorrect data types, or violating constraints.")
+                            "Your task is to introduce exactly one error in the JSON instance. The error type needs to be: ")
 JSON_ERROR_PROMPT = """Using the following valid JSON instance, introduce exactly one error: """
