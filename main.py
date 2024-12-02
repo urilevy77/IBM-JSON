@@ -1,52 +1,40 @@
 from huggingface_hub import InferenceClient
-import json
-
-from config import JSON_PATH,  STORY_STRUCTURE_PATH, THEME_PATH
-from generators import json_schema_generator, json_generator, error_generator
-from validation import json_schema_validator, json_validator
-from utils import read_url, insert_schemas_to_arr, SCHEMAS_ARRAY, insert_json_to_arr, JSON_ARR_OF_ARR
+from config import STORY_STRUCTURE_PATH, THEME_PATH, ERRORS_PATH
+from generators import error_generator, json_schema_generator, json_generator, input_generator
+from utils import insert_schemas_to_arr, SCHEMAS_ARRAY, JSON_ARR_OF_ARR, insert_all_to_dict, \
+    insert_json_arr_to_arr, DICT_FOR_INPUT
+from validation import json_validator
 
 if __name__ == "__main__":
-    client = InferenceClient()
-    # # for creating JSON schema out of story structure and theme
-    with open(STORY_STRUCTURE_PATH, 'r') as structure_file:
-        for structure in structure_file:
-            with open(THEME_PATH, 'r') as theme_file:
-                for theme in theme_file:
-                    insert_schemas_to_arr(structure, theme)
-
-    for schema in SCHEMAS_ARRAY:
-        insert_json_to_arr(schema, 2)
-        arr = JSON_ARR_OF_ARR
+    # client = InferenceClient()
+    # # # for creating JSON schema out of story structure and theme
+    # with open(STORY_STRUCTURE_PATH, 'r') as structure_file:
+    #     for structure in structure_file:
+    #         with open(THEME_PATH, 'r') as theme_file:
+    #             for theme in theme_file:
+    #                 schema = json_schema_generator(structure, theme)
+    #                 insert_schemas_to_arr(schema)
+    # seed_arr = 40
+    # num_of_jsons = 2
     #
-    # # creating JSONs out of JSON schema
-    # with open(JSON_SCHEMA_PATH, 'r') as json_schema_file:
-    #     schema = json_schema_file.read()
-    #     json_generator(schema)
-
-    # # creating errors on JSONs
-    # with open(JSON_PATH, 'r') as json_file:
-    # json = json_file.read()
-    # error_generator(json)
-    # print(type(read_url()))
-    # with open(JSON_PATH) as file:
-    #     json_try = (file.read())
-    # with open(JSON_SCHEMA_PATH) as schema_file:
-    #     schema_try = schema_file.read()
-    # #print(json_try)
-    # #print(schema_try)
-    # validate(instance=json_try, schema=schema_try)
-    # schema = {
-    #     "$schema": "http://json-schema.org/draft-07/schema#",
-    #     "type": "object",
-    #     "properties": {
-    #         "name": {"type": "string"},
-    #         "age": {"type": "integer", "minimum": 0},
-    #         "email": {"type": "string", "format": "email"}
-    #     },
-    #     "required": ["name", "age"]
-    # }
-    # json_schema_validator(schema)
-# JSON_SCHEMA_PATH = "JSONschema"
-# JSON_PATH = "JSON"
-# json_validator(json.loads(json_try), json.loads(schema_try))
+    # for schema in SCHEMAS_ARRAY:
+    #     json_arr = []
+    #     for i in range(num_of_jsons):
+    #         json = json_generator(schema, seed_arr + i)
+    #         json_arr.append(json)
+    #     insert_json_arr_to_arr(json_arr)
+    #
+    # for i in range(len(SCHEMAS_ARRAY)):
+    #     for json in JSON_ARR_OF_ARR[i]:
+    #         with open(ERRORS_PATH, 'r') as error_file:
+    #             for error in error_file:
+    #                 desc, json_with_error = error_generator(json, error)
+    #                 schema = SCHEMAS_ARRAY[i]
+    #                 # checks if the description and the json with error is not None and
+    #                 # if the json with error is not valid
+    #                 if desc is not None and json_validator(json_with_error, schema) is False:
+    #                     insert_all_to_dict(schema, json, json_with_error, desc)
+    #
+    # for key in DICT_FOR_INPUT.keys():
+    #     input_generator(key)
+    print("he")

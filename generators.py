@@ -114,18 +114,34 @@ def error_generator(json_without_error, error_type):
     )
 
     # Extract and print the assistant's reply
-    invalid_json_instance = response.get("choices", [{}])[0].get("message", {}).get("content", "")
-    return invalid_json_instance
+    reply = response.get("choices", [{}])[0].get("message", {}).get("content", "")
+    # Split the reply into description and JSON
+    try:
+        description, invalid_json_instance = reply.strip().split("\n\n", 1)
+        return description, invalid_json_instance
+    except ValueError:
+        return None, None
 
-# def error_generator(json_without_error):
-#     response = CLIENT.text_generation(
-#         prompt=f"{JSON_ERROR_PROMPT} {json_without_error}",
-#         model=MODEL,
-#         temperature=0.8,
-#         max_new_tokens=500,
-#         seed=44,
-#         return_full_text=False,
-#     )
-#     print(response)
 
-# \n\n{json.dumps(json_without_error, indent=2)}
+def input_generator(json_error):
+    chat_input = [
+        {
+            "role": "system",
+            "content": f"{INPUT_PROMPT}"
+        },
+        {
+            "role": "user",
+            "content": f"The json with the error:{json_error}"
+        }
+    ]
+
+    # Call the chat completion API
+    response = CLIENT.chat_completion(
+        messages=chat_input,
+        model=MODEL,
+        temperature=0.8,
+        max_tokens=500,
+        seed=44,
+    )
+    reply = response.get("choices", [{}])[0].get("message", {}).get("content", "")
+    print(reply)

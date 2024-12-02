@@ -28,6 +28,19 @@ JSON_PROMPT = " Using the above schema, create a valid " \
               "Your response must contain only the JSON. Do not include any descriptions, explanations, " \
               "or additional text." \
               "Choose the size randomly, without mentioning which one you chose."
-JSON_ERROR_SYSTEM_PROMPT = ("You are an AI designed to create invalid JSON instances based on a provided JSON schema. "
-                            "Your task is to introduce exactly one error in the JSON instance. The error type needs to be: ")
-JSON_ERROR_PROMPT = """Using the following valid JSON instance, introduce exactly one error: """
+JSON_ERROR_SYSTEM_PROMPT = """You are an AI designed to create invalid JSON instances based on a provided JSON 
+schema. Your task is to introduce exactly one error in the JSON instance and describe the error in one sentence. The 
+response must always follow this format:\n A brief description of the error (one sentence).\n  The JSON instance 
+with the error, without comments.\n Ensure there is a blank line between the description and the JSON instance."""
+
+JSON_ERROR_PROMPT = """Using the following valid JSON instance, introduce exactly one error and format the response as
+ instructed: """
+
+INPUT_PROMPT = """You are an assistant that simulates user queries for help with JSON files. Your task is to generate 
+a user-style query based on the provided JSON schema, erroneous JSON file, and error description. The query must 
+appear as though the user is asking for assistance in correcting their JSON file.
+
+Format the output as follows:
+1. A brief introduction from the user describing their problem.
+2. The erroneous JSON file.
+"""
