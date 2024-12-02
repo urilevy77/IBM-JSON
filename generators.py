@@ -145,3 +145,25 @@ def input_generator(json_error):
     )
     reply = response.get("choices", [{}])[0].get("message", {}).get("content", "")
     print(reply)
+
+
+def description_output_generator(description, fixed_json):
+    chat_input = [
+
+        {
+            "role": "user",
+            "content": f"{DESCRIPTION_OUTPUT_PROMPT} \n this is the error description:{description} \n and this is "
+                       f"the corrected json: {fixed_json}"
+        }
+    ]
+
+    # Call the chat completion API
+    response = CLIENT.chat_completion(
+        messages=chat_input,
+        model=MODEL,
+        temperature=0.8,
+        max_tokens=500,
+        seed=44,
+    )
+    reply = response.get("choices", [{}])[0].get("message", {}).get("content", "")
+    print(reply)

@@ -13,6 +13,6 @@ def json_validator(json, schema):
     try:
         validate(json, schema)
         return True
-    except exceptions.SchemaError as e:
+    except exceptions.ValidationError as e:
         return False
 

@@ -34,7 +34,7 @@ response must always follow this format:\n A brief description of the error (one
 with the error, without comments.\n Ensure there is a blank line between the description and the JSON instance."""
 
 JSON_ERROR_PROMPT = """Using the following valid JSON instance, introduce exactly one error and format the response as
- instructed: """
+ instructed, without adding comments on the JSON: """
 
 INPUT_PROMPT = """You are an assistant that simulates user queries for help with JSON files. Your task is to generate 
 a user-style query based on the provided JSON schema, erroneous JSON file, and error description. The query must 
@@ -44,3 +44,14 @@ Format the output as follows:
 1. A brief introduction from the user describing their problem.
 2. The erroneous JSON file.
 """
+
+DESCRIPTION_OUTPUT_PROMPT = """You are an assistant that fixes JSON errors and describes the corrections made. 
+
+Given the following corrected JSON and its error description,
+Provide a brief description of the correction made to the JSON.
+The response must follow this format:
+Description of Correction:
+<One sentence describing what was corrected>
+
+Corrected JSON:
+<The corrected JSON>"""
