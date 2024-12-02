@@ -41,9 +41,10 @@ if __name__ == "__main__":
                         try:
                             json_instance_error = json.loads(json_with_error)
                         except JSONDecodeError as e:
-                            insert_all_to_dict(schema, json, json_with_error, desc)
-    #functioning the input generator
+                            insert_all_to_dict(schema, json_file, json_with_error, desc)
+    # functioning the input generator
     # for key in DICT_FOR_INPUT.keys():
     #     input_generator(key)
     for val in DICT_FOR_INPUT.values():
         description_output_generator(val[2], val[1])
+        print(val[1])

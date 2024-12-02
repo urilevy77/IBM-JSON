@@ -52,6 +52,4 @@ Provide a brief description of the correction made to the JSON.
 The response must follow this format:
 Description of Correction:
 <One sentence describing what was corrected>
-
-Corrected JSON:
-<The corrected JSON>"""
+"""
