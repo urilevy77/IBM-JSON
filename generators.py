@@ -144,7 +144,7 @@ def input_generator(json_error):
         seed=44,
     )
     reply = response.get("choices", [{}])[0].get("message", {}).get("content", "")
-    print(reply)
+    return reply
 
 
 def description_output_generator(description, fixed_json):
@@ -166,4 +166,4 @@ def description_output_generator(description, fixed_json):
         seed=44,
     )
     reply = response.get("choices", [{}])[0].get("message", {}).get("content", "")
-    print(reply)
+    return reply

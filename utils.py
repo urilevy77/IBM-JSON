@@ -3,7 +3,7 @@ from generators import json_generator
 SCHEMAS_ARRAY = []
 JSON_ARR_OF_ARR = []
 DICT_FOR_INPUT = {}
-
+INPUT_OUTPUT_DICT={}
 
 def insert_schemas_to_arr(schema):
     """
