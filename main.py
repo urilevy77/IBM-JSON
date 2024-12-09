@@ -6,7 +6,7 @@ from config import STORY_STRUCTURE_PATH, THEME_PATH, ERRORS_PATH
 from generators import error_generator, json_schema_generator, json_generator, input_generator, \
     description_output_generator
 from utils import insert_schemas_to_arr, SCHEMAS_ARRAY, JSON_ARR_OF_ARR, insert_all_to_dict, \
-    insert_json_arr_to_arr, DICT_FOR_INPUT, INPUT_OUTPUT_DICT
+    insert_json_arr_to_arr, ARRAY_OF_DICTS, INPUT_OUTPUT_DICT
 from validation import json_validator
 
 if __name__ == "__main__":
@@ -47,7 +47,7 @@ if __name__ == "__main__":
 
     # creating input for the user ond output of the model and insert it to a dictionary
 
-    for key, val in DICT_FOR_INPUT.items():
-        user_input = input_generator(key)
-        model_output = description_output_generator(val[2], val[1])
-        INPUT_OUTPUT_DICT[user_input] = [model_output, val[1]]
+    for dict in ARRAY_OF_DICTS:
+        user_input = input_generator(dict['json with error'])
+        model_output = description_output_generator(dict['error description'], dict["json instance"])
+        INPUT_OUTPUT_DICT.append({"user input": user_input, "model output": f'{model_output} {dict["json instance"]}'})

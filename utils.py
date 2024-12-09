@@ -2,8 +2,9 @@ from generators import json_generator
 
 SCHEMAS_ARRAY = []
 JSON_ARR_OF_ARR = []
-DICT_FOR_INPUT = {}
-INPUT_OUTPUT_DICT={}
+ARRAY_OF_DICTS = []
+INPUT_OUTPUT_DICT = []
+
 
 def insert_schemas_to_arr(schema):
     """
@@ -22,5 +23,7 @@ def insert_json_arr_to_arr(json_arr):
     JSON_ARR_OF_ARR.append(json_arr)
 
 
-def insert_all_to_dict(schema, json, json_error, description):
-    DICT_FOR_INPUT[json_error] = [schema, json, description]
+def insert_all_to_dict(schema, json_instance, json_error, description):
+    ARRAY_OF_DICTS.append({"json with error": json_error, "schema": schema, "json instance": json_instance,
+                           "error description": description})
+
