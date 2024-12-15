@@ -51,3 +51,4 @@ if __name__ == "__main__":
         user_input = input_generator(dict['json with error'])
         model_output = description_output_generator(dict['error description'], dict["json instance"])
         INPUT_OUTPUT_DICT.append({"user input": user_input, "model output": f'{model_output} {dict["json instance"]}'})
+        print(user_input)
