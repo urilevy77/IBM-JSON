@@ -47,7 +47,8 @@ if __name__ == "__main__":
                             json_instance_error = json.loads(json_with_error)
                             validate(json_with_error, schema)
                         except (JSONDecodeError, ValidationError,TypeError) as e:
-                            insert_all_to_dict(schema, json_file, json_with_error, desc)
+                            if json_file is not None:
+                                insert_all_to_dict(schema, json_file, json_with_error, desc)
 
     # creating input for the user ond output of the model and insert it to a dictionary
 
@@ -55,5 +56,6 @@ if __name__ == "__main__":
         user_input = input_generator(dict['json with error'])
         model_output = description_output_generator(dict['error description'], dict["json instance"])
         INPUT_OUTPUT_DICT.append({"user input": user_input, "model output": f'{model_output} {dict["json instance"]}'})
-        print("JSON SCHEMA"+dict['schema'])
-        print("USER INPUT"+user_input)
+        print("JSON SCHEMA:"+dict['schema'])
+        print(f"JSON: {dict['json instance']}")
+        print("USER INPUT:"+user_input)
