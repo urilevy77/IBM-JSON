@@ -2,6 +2,9 @@ import json
 from json import JSONDecodeError
 
 from huggingface_hub import InferenceClient
+from jsonschema.exceptions import ValidationError
+from jsonschema.validators import validate
+
 from config import STORY_STRUCTURE_PATH, THEME_PATH, ERRORS_PATH
 from generators import error_generator, json_schema_generator, json_generator, input_generator, \
     description_output_generator
@@ -42,7 +45,8 @@ if __name__ == "__main__":
                     if desc is not None:
                         try:
                             json_instance_error = json.loads(json_with_error)
-                        except JSONDecodeError as e:
+                            validate(json_with_error, schema)
+                        except (JSONDecodeError, ValidationError,TypeError) as e:
                             insert_all_to_dict(schema, json_file, json_with_error, desc)
 
     # creating input for the user ond output of the model and insert it to a dictionary
@@ -51,4 +55,5 @@ if __name__ == "__main__":
         user_input = input_generator(dict['json with error'])
         model_output = description_output_generator(dict['error description'], dict["json instance"])
         INPUT_OUTPUT_DICT.append({"user input": user_input, "model output": f'{model_output} {dict["json instance"]}'})
-        print(user_input)
+        print("JSON SCHEMA"+dict['schema'])
+        print("USER INPUT"+user_input)

@@ -1,2 +1,2 @@
-Flat Layout: A simple list of attributes with no nesting or hierarchies.
 Nested Objects: A primary attribute with several sub-attributes, creating a nested structure.
+Arrays of Objects: A structure that includes an array (list) of similar objects, allowing for multiple instances of related data.

@@ -45,14 +45,16 @@ def json_schema_generator(story_structure, story_theme):
         model=MODEL,
         temperature=0.8,
         max_tokens=500,
-        seed=42,
+        seed=43,
     )
 
     # Extract and print the assistant's reply
     schema_str = second_response.get("choices", [{}])[0].get("message", {}).get("content", "")
+
     try:
         generated_schema = json.loads(schema_str)
         if json_schema_validator(generated_schema):
+
             return schema_str
     except JSONDecodeError as e:
         return None
