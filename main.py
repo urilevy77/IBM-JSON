@@ -3,7 +3,6 @@ import os
 from json import JSONDecodeError
 
 from dotenv import load_dotenv
-from huggingface_hub import InferenceClient
 from jsonschema.exceptions import ValidationError
 from jsonschema.validators import validate
 

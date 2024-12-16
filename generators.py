@@ -1,20 +1,15 @@
 import json
 import os
 from json.decoder import JSONDecodeError
-
 from dotenv import load_dotenv
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from langchain_huggingface import HuggingFaceEndpoint, ChatHuggingFace
-
 from config import MODEL
 from prompts import *
 from validation import json_schema_validator, json_validator
-from huggingface_hub import InferenceClient
 
-CLIENT = InferenceClient()
 load_dotenv()
-
-# Set your Hugging Face API token as an environment variable
+# Set Hugging Face API token as an environment variable
 HUGGINGFACE_API_TOKEN = os.getenv("HUGGINGFACEHUB_API_TOKEN")
 os.environ["HUGGINGFACEHUB_API_TOKEN"] = HUGGINGFACE_API_TOKEN
 
@@ -33,8 +28,7 @@ def invoke_with_seed(message, seed=43):
 
 
 def json_schema_generator(story_structure, story_theme):
-    # Chat-style input with roles]
-
+    # Chat-style input with roles
     messages = [
         SystemMessage(content=SCHEMA_SYSTEM_PROMPT),
         HumanMessage(content=VALID_SCHEMA_PROMPT),
