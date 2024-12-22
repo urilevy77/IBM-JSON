@@ -12,7 +12,8 @@ VALID_SCHEMA_PROMPT = """Generate a valid JSON Schema. The schema must conform t
 
 JSON_SCHEMA_PROMPT = PromptTemplate(
     template="""Generate a valid JSON Schema about {theme} with the following structure format: {structure}
-    -The schema should be valid and include at least 20 fields. 
+    -The schema should be valid
+    -The schema should include 20-40 fields. 
     - Ensure all fields are properly defined with their types. 
     - Include constraints like `minLength`, `maximum`, or `enum` only when applicable. 
     - Specify the `$schema` field as `"http://json-schema.org/draft-07/schema#"` to define the version. 
@@ -77,17 +78,80 @@ JSON_SCHEMA_EXAMPLE = """{
               },
               "required": ["name", "age", "email", "address"]
             }"""
-JSON_GENERATOR_SYSTEM_PROMPT = ("You are an AI designed to generate JSON instances based on a provided JSON schema. "
+
+MEDIUM_JSON_EXAMPLE= """{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "age": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 120
+    },
+    "email": {
+      "type": "string",
+      "format": "email"
+    },
+    "address": {
+      "type": "object",
+      "properties": {
+        "street": {
+          "type": "string",
+          "minLength": 5
+        },
+        "city": {
+          "type": "string"
+        },
+        "zip": {
+          "type": "string",
+          "pattern": "^[0-9]{5}$"
+        }
+      },
+      "required": ["street", "city", "zip"]
+    },
+    "phoneNumbers": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^\\+?[0-9\\- ]{7,15}$"
+      },
+      "minItems": 1,
+      "maxItems": 3
+    },
+    "preferences": {
+      "type": "object",
+      "properties": {
+        "newsletter": {
+          "type": "boolean"
+        },
+        "theme": {
+          "type": "string",
+          "enum": ["light", "dark"]
+        }
+      },
+      "required": ["newsletter"]
+    }
+  },
+  "required": ["name", "age", "email", "address", "preferences"]
+}
+
+"""
+JSON_GENERATOR_SYSTEM_PROMPT = ("You are an AI designed to generate long and complex JSON instances based on a provided JSON schema. "
                                 "The schema defines the structure, types, and constraints for JSON objects. "
                                 "Always ensure the generated JSON is strictly valid according to the schema.")
 
-JSON_PROMPT = PromptTemplate(template="Using the following schema \n{schema}\n create a valid JSON instance that "
+JSON_PROMPT = PromptTemplate(template="Using the following schema \n{schema}\n create the {number} valid JSON instance that "
                                       "strictly adheres to the schema's rules, " \
                                       "including constraints like required fields, field types, and specified formats. " \
-                                      "Ensure the JSON instance is varied but fully compliant with the schema. " \
+                                      "Ensure the JSON instance is varied but fully compliant with the schema." \
                                       "Your response must contain only the JSON. Do not include any descriptions, "
                                       "explanations, or additional text.",
-                             input_variables=["schema"],
+                             input_variables=["schema","number"],
                              )
 
 JSON_ERROR_SYSTEM_PROMPT = """You are an assistant tasked with receiving a JSON instance and inserting a deliberate error into it. 

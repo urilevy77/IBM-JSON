@@ -48,8 +48,8 @@ def json_schema_generator(story_structure, story_theme):
 
         return None
 
-
-def json_generator(json_schema, json_seed):
+# original json generator
+def json_generator(json_schema, json_num):
     """Generates JSON instances from a given schema using chat completion."""
     message = [
         {
@@ -58,24 +58,26 @@ def json_generator(json_schema, json_seed):
         },
         {
             "role": "user",
-            "content": JSON_PROMPT.format(schema=json_schema)
+            "content": JSON_PROMPT.format(schema=json_schema, number=json_num)
         }
     ]
 
     # Call the chat completion API
-    response = invoke_with_seed(message,json_seed)
+    response = invoke_with_seed(message)
     # Extract and print the assistant's reply
     json_instance = response.content
-
+    print(f"{json_num} start: \n")
+    print(json_instance)
+    print(f"{json_num} end:\n")
     try:
         generated_json = json.loads(json_instance)
         generated_schema = json.loads(json_schema)
         if json_validator(generated_json, generated_schema):
-
             return json_instance
     except JSONDecodeError as e:
-        print("invalid json")
+        # print("invalid json")
         return None
+
 
 
 def error_generator(json_without_error, error_type):
