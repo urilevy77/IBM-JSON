@@ -14,12 +14,12 @@ HUGGINGFACE_API_TOKEN = os.getenv("HUGGINGFACEHUB_API_TOKEN")
 os.environ["HUGGINGFACEHUB_API_TOKEN"] = HUGGINGFACE_API_TOKEN
 
 
-def invoke_with_seed(message, seed=43):
+def invoke_with_seed(message):
     llm = HuggingFaceEndpoint(
         repo_id=MODEL,  # You can choose a different model
         task="chat completion",
         max_new_tokens=500,
-        seed=seed,
+        seed=43,
         temperature=0.8
     )
     # Create a ChatHuggingFace instance
@@ -38,67 +38,26 @@ def json_schema_generator(story_structure, story_theme):
 
     response = invoke_with_seed(messages)
     schema_str = response.content
+    return schema_str
 
-    try:
-        generated_schema = json.loads(schema_str)
-        if json_schema_validator(generated_schema):
 
-            return schema_str
-    except JSONDecodeError as e:
-
-        return None
-
-# original json generator
 def json_generator(json_schema, json_num):
     """Generates JSON instances from a given schema using chat completion."""
-    message = [
-        {
-            "role": "system",
-            "content": JSON_GENERATOR_SYSTEM_PROMPT
-        },
-        {
-            "role": "user",
-            "content": JSON_PROMPT.format(schema=json_schema, number=json_num)
-        }
-    ]
+    message = [SystemMessage(content=JSON_GENERATOR_SYSTEM_PROMPT),
+               HumanMessage(content=JSON_PROMPT.format(schema=json_schema, number=json_num))]
 
-    # Call the chat completion API
     response = invoke_with_seed(message)
-    # Extract and print the assistant's reply
     json_instance = response.content
-    print(f"{json_num} start: \n")
-    print(json_instance)
-    print(f"{json_num} end:\n")
-    try:
-        generated_json = json.loads(json_instance)
-        generated_schema = json.loads(json_schema)
-        if json_validator(generated_json, generated_schema):
-            return json_instance
-    except JSONDecodeError as e:
-        # print("invalid json")
-        return None
-
+    return json_instance
 
 
 def error_generator(json_without_error, error_type):
     """Generates an invalid JSON instance by introducing a single error using chat completion."""
-    message = [
-        {
-            "role": "system",
-            "content": JSON_ERROR_SYSTEM_PROMPT
-        },
-        {
-            "role": "user",
-            "content": JSON_ERROR_PROMPT.format(json_instance=json_without_error, error=error_type)
-        }
-    ]
+    message = [SystemMessage(content=JSON_ERROR_SYSTEM_PROMPT),
+               HumanMessage(content=JSON_ERROR_PROMPT.format(json_instance=json_without_error, error=error_type))]
 
-    # Call the chat completion API
     response = invoke_with_seed(message)
-
-    # Extract and print the assistant's reply
     reply = response.content
-    # Split the reply into description and JSON
     try:
         description, invalid_json_instance = reply.strip().split("\n\n", 1)
         return description, invalid_json_instance
@@ -107,18 +66,9 @@ def error_generator(json_without_error, error_type):
 
 
 def input_generator(json_error):
-    message = [
-        {
-            "role": "system",
-            "content": f"{INPUT_PROMPT}"
-        },
-        {
-            "role": "user",
-            "content": f"The json with the error:{json_error}"
-        }
-    ]
+    message = [SystemMessage(content=INPUT_PROMPT),
+               HumanMessage(content=f"The json with the error:{json_error}")]
 
-    # Call the chat completion API
     response = invoke_with_seed(message)
     reply = response.content
     return reply
@@ -126,14 +76,8 @@ def input_generator(json_error):
 
 def description_output_generator(description, fixed_json):
     message = [
+        HumanMessage(content=DESCRIPTION_OUTPUT_PROMPT.format(description=description, json_instance=fixed_json))]
 
-        {
-            "role": "user",
-            "content": DESCRIPTION_OUTPUT_PROMPT.format(description=description, json_instance=fixed_json)
-        }
-    ]
-
-    # Call the chat completion API
     response = invoke_with_seed(message)
     reply = response.content
     return reply
