@@ -1,123 +1,63 @@
 import json
+import os
 from json.decoder import JSONDecodeError
-
+from dotenv import load_dotenv
+from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
+from langchain_huggingface import HuggingFaceEndpoint, ChatHuggingFace
 from config import MODEL
 from prompts import *
 from validation import json_schema_validator, json_validator
-from huggingface_hub import InferenceClient
 
-CLIENT = InferenceClient()
+load_dotenv()
+# Set Hugging Face API token as an environment variable
+HUGGINGFACE_API_TOKEN = os.getenv("HUGGINGFACEHUB_API_TOKEN")
+os.environ["HUGGINGFACEHUB_API_TOKEN"] = HUGGINGFACE_API_TOKEN
+
+
+def invoke_with_seed(message):
+    llm = HuggingFaceEndpoint(
+        repo_id=MODEL,  # You can choose a different model
+        task="chat completion",
+        max_new_tokens=500,
+        seed=43,
+        temperature=0.8
+    )
+    # Create a ChatHuggingFace instance
+    chat_model = ChatHuggingFace(llm=llm)
+    return chat_model.invoke(message)
 
 
 def json_schema_generator(story_structure, story_theme):
     # Chat-style input with roles
-    chat_input = [
-        {
-            "role": "system",
-            "content": SCHEMA_SYSTEM_PROMPT
-        },
-        {
-            "role": "user",
-            "content": f"{VALID_SCHEMA_PROMPT}"
-        },
-        {
-            "role": "assistant",
-            "content": """{
-              "$schema": "http://json-schema.org/draft-07/schema#",
-              "type": "object",
-              "properties": {
-                "name": { "type": "string" },
-                "age": { "type": "integer", "minimum": 0 },
-                "email": { "type": "string", "format": "email" }
-              },
-              "required": ["name", "age"]
-            }"""
-        },
-        {
-            "role": "user",
-            "content": f"{story_structure}  {JSON_SCHEMA_PROMPT} {story_theme}"
-        }
+    messages = [
+        SystemMessage(content=SCHEMA_SYSTEM_PROMPT),
+        HumanMessage(content=VALID_SCHEMA_PROMPT),
+        AIMessage(content=SIMPLE_JSON_SCHEMA),
+        HumanMessage(content=JSON_SCHEMA_PROMPT.format(theme=story_theme, structure=story_structure))
     ]
 
-    # Call the chat completion API
-    second_response = CLIENT.chat_completion(
-        messages=chat_input,
-        model=MODEL,
-        temperature=0.8,
-        max_tokens=500,
-        seed=43,
-    )
-
-    # Extract and print the assistant's reply
-    schema_str = second_response.get("choices", [{}])[0].get("message", {}).get("content", "")
-
-    try:
-        generated_schema = json.loads(schema_str)
-        if json_schema_validator(generated_schema):
-
-            return schema_str
-    except JSONDecodeError as e:
-        return None
+    response = invoke_with_seed(messages)
+    schema_str = response.content
+    return schema_str
 
 
-def json_generator(json_schema, json_seed):
+def json_generator(json_schema, json_num):
     """Generates JSON instances from a given schema using chat completion."""
-    chat_input = [
-        {
-            "role": "system",
-            "content": JSON_GENERATOR_SYSTEM_PROMPT
-        },
-        {
-            "role": "user",
-            "content": f"This is a JSON schema:\n {json_schema}\n {JSON_PROMPT}"
-        }
-    ]
+    message = [SystemMessage(content=JSON_GENERATOR_SYSTEM_PROMPT),
+               HumanMessage(content=JSON_PROMPT.format(schema=json_schema, number=json_num))]
 
-    # Call the chat completion API
-    response = CLIENT.chat_completion(
-        messages=chat_input,
-        model=MODEL,
-        temperature=0.8,
-        max_tokens=500,
-        seed=json_seed,
-    )
-
-    # Extract and print the assistant's reply
-    json_instance = response.get("choices", [{}])[0].get("message", {}).get("content", "")
-    try:
-        generated_json = json.loads(json_instance)
-        generated_schema = json.loads(json_schema)
-        if json_validator(generated_json, generated_schema):
-            return json_instance
-    except JSONDecodeError as e:
-        return None
+    response = invoke_with_seed(message)
+    json_instance = response.content
+    return json_instance
 
 
 def error_generator(json_without_error, error_type):
     """Generates an invalid JSON instance by introducing a single error using chat completion."""
-    chat_input = [
-        {
-            "role": "system",
-            "content": f"{JSON_ERROR_SYSTEM_PROMPT} {error_type}"
-        },
-        {
-            "role": "user",
-            "content": f"{JSON_ERROR_PROMPT} {json_without_error} "
-        }
-    ]
+    message = [SystemMessage(content=JSON_ERROR_SYSTEM_PROMPT),
+               HumanMessage(content=JSON_ERROR_PROMPT.format(json_instance=json_without_error, error=error_type))]
 
-    # Call the chat completion API
-    response = CLIENT.chat_completion(
-        messages=chat_input,
-        model=MODEL,
-        temperature=0.8,
-        max_tokens=500,
-        seed=44,
-    )
-
-    # Extract and print the assistant's reply
-    reply = response.get("choices", [{}])[0].get("message", {}).get("content", "")
-    # Split the reply into description and JSON
+    response = invoke_with_seed(message)
+    reply = response.content
     try:
         description, invalid_json_instance = reply.strip().split("\n\n", 1)
         return description, invalid_json_instance
@@ -126,46 +66,18 @@ def error_generator(json_without_error, error_type):
 
 
 def input_generator(json_error):
-    chat_input = [
-        {
-            "role": "system",
-            "content": f"{INPUT_PROMPT}"
-        },
-        {
-            "role": "user",
-            "content": f"The json with the error:{json_error}"
-        }
-    ]
+    message = [SystemMessage(content=INPUT_PROMPT),
+               HumanMessage(content=f"The json with the error:{json_error}")]
 
-    # Call the chat completion API
-    response = CLIENT.chat_completion(
-        messages=chat_input,
-        model=MODEL,
-        temperature=0.8,
-        max_tokens=500,
-        seed=44,
-    )
-    reply = response.get("choices", [{}])[0].get("message", {}).get("content", "")
+    response = invoke_with_seed(message)
+    reply = response.content
     return reply
 
 
 def description_output_generator(description, fixed_json):
-    chat_input = [
+    message = [
+        HumanMessage(content=DESCRIPTION_OUTPUT_PROMPT.format(description=description, json_instance=fixed_json))]
 
-        {
-            "role": "user",
-            "content": f"{DESCRIPTION_OUTPUT_PROMPT} \n this is the error description:{description} \n and this is "
-                       f"the corrected json: {fixed_json}"
-        }
-    ]
-
-    # Call the chat completion API
-    response = CLIENT.chat_completion(
-        messages=chat_input,
-        model=MODEL,
-        temperature=0.8,
-        max_tokens=500,
-        seed=44,
-    )
-    reply = response.get("choices", [{}])[0].get("message", {}).get("content", "")
+    response = invoke_with_seed(message)
+    reply = response.content
     return reply
