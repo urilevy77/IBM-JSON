@@ -1,16 +1,11 @@
 import json
-import os
 from json import JSONDecodeError
 import random
-
-from dotenv import load_dotenv
 from jsonschema.exceptions import ValidationError
 from jsonschema.validators import validate
-
 from config import STORY_STRUCTURE_PATH, THEME_PATH, ERRORS_PATH
 from generators import error_generator, json_schema_generator, json_generator, input_generator, \
     description_output_generator
-from prompts import JSON_SCHEMA_EXAMPLE, SIMPLE_JSON_SCHEMA
 from utils import insert_schemas_to_arr, SCHEMAS_ARRAY, JSON_ARR_OF_ARR, insert_all_to_dict, \
     insert_json_arr_to_arr, ARRAY_OF_DICTS, INPUT_OUTPUT_DICT
 from validation import json_validator, json_schema_validator
@@ -20,7 +15,7 @@ if __name__ == "__main__":
     # Create an inflect engine instance
     num_to_string = inflect.engine()
     num_of_jsons = 2
-    # creating JSON schema from story structure and theme, and insert to a array
+    # creating JSON schema from story structure and theme, and insert to an array
     with open(STORY_STRUCTURE_PATH, 'r') as structure_file:
         for structure in structure_file:
             with open(THEME_PATH, 'r') as theme_file:

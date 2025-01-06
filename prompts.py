@@ -163,8 +163,7 @@ otherwise specified. Ensure the response follows this format:
 
 Ensure there is a blank line between the description and the JSON instance."""
 
-JSON_ERROR_PROMPT = PromptTemplate(template="""Using the following valid JSON instance {json_instance}, introduce exactly one error from this type "{error}" and format the response as
- instructed, without adding comments on the JSON """, input_variables=["json_instance", "error"])
+JSON_ERROR_PROMPT = PromptTemplate(template="""Using the following valid JSON instance {json_instance}\nIntroduce exactly one error from this type "{error}" and format the response as instructed, without adding comments on the JSON.""", input_variables=["json_instance", "error"])
 
 INPUT_PROMPT = """
 You are an assistant that simulates user queries for help with JSON files. Your task is to generate 
