@@ -2,7 +2,6 @@
 SCHEMAS_ARRAY = []  # Stores all generated JSON schemas
 JSON_ARR_OF_ARR = []  # Stores two-dimensional arrays of JSON instances
 JSON_DATA_DICTS = []  # Stores dictionaries with schema, JSON instance, erroneous JSON and error details
-INPUT_OUTPUT_DICT = []
 
 
 def insert_schemas_to_arr(schema):
