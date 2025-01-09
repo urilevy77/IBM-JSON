@@ -3,7 +3,4 @@ python-dotenv
 huggingface_hub
 jsonschema
 langchain-huggingface
-langchain_community
-transformers
-torch
 inflect
