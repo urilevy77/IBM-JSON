@@ -6,7 +6,7 @@ from jsonschema.exceptions import ValidationError
 from jsonschema.validators import validate
 from config import STORY_STRUCTURE_PATH, THEME_PATH, ERRORS_PATH
 from generators import *
-from utils import *
+from data_store import *
 from validation import json_validator, json_schema_validator
 
 
@@ -57,7 +57,7 @@ if __name__ == "__main__":
     # k its for printing the arrays inside the dictionary
     k = 0
 
-    for arr_dict in ARRAY_OF_DICTS:
+    for arr_dict in JSON_DATA_DICTS:
         user_input = input_generator(arr_dict['json with error'])
         model_output = description_output_generator(arr_dict['error description'], arr_dict["json instance"])
         with_json_initial = random.randint(0, 1)
