@@ -15,7 +15,6 @@ def json_schema_validator(schema_str):
         return False
 
 
-
 def json_validator(json_instance, json_schema):
     try:
         generated_json = json.loads(json_instance)
@@ -27,5 +26,3 @@ def json_validator(json_instance, json_schema):
             return False
     except JSONDecodeError:
         return False
-
-
