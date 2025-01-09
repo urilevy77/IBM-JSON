@@ -1,5 +1,4 @@
-from generators import json_generator
-
+# Global parameters
 SCHEMAS_ARRAY = []
 JSON_ARR_OF_ARR = []
 ARRAY_OF_DICTS = []

@@ -1,12 +1,10 @@
-import json
 import os
-from json.decoder import JSONDecodeError
 from dotenv import load_dotenv
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from langchain_huggingface import HuggingFaceEndpoint, ChatHuggingFace
 from config import MODEL
 from prompts import *
-from validation import json_schema_validator, json_validator
+
 
 load_dotenv()
 # Set Hugging Face API token as an environment variable
@@ -31,9 +29,9 @@ def json_schema_generator(story_structure, story_theme):
     # Chat-style input with roles
     messages = [
         SystemMessage(content=SCHEMA_SYSTEM_PROMPT),
-        HumanMessage(content=VALID_SCHEMA_PROMPT),
+        HumanMessage(content=VALID_SCHEMA_HUMAN_PROMPT),
         AIMessage(content=SIMPLE_JSON_SCHEMA),
-        HumanMessage(content=JSON_SCHEMA_PROMPT.format(theme=story_theme, structure=story_structure))
+        HumanMessage(content=JSON_SCHEMA_HUMAN_PROMPT.format(theme=story_theme, structure=story_structure))
     ]
 
     response = invoke_with_seed(messages)
@@ -44,7 +42,7 @@ def json_schema_generator(story_structure, story_theme):
 def json_generator(json_schema, json_num):
     """Generates JSON instances from a given schema using chat completion."""
     message = [SystemMessage(content=JSON_GENERATOR_SYSTEM_PROMPT),
-               HumanMessage(content=JSON_PROMPT.format(schema=json_schema, number=json_num))]
+               HumanMessage(content=JSON_GENERATOR_HUMAN_PROMPT.format(schema=json_schema, number=json_num))]
 
     response = invoke_with_seed(message)
     json_instance = response.content
@@ -54,7 +52,7 @@ def json_generator(json_schema, json_num):
 def error_generator(json_without_error, error_type):
     """Generates an invalid JSON instance by introducing a single error using chat completion."""
     message = [SystemMessage(content=JSON_ERROR_SYSTEM_PROMPT),
-               HumanMessage(content=JSON_ERROR_PROMPT.format(json_instance=json_without_error, error=error_type))]
+               HumanMessage(content=JSON_ERROR_HUMAN_PROMPT.format(json_instance=json_without_error, error=error_type))]
 
     response = invoke_with_seed(message)
     reply = response.content
@@ -66,7 +64,7 @@ def error_generator(json_without_error, error_type):
 
 
 def input_generator(json_error):
-    message = [SystemMessage(content=INPUT_PROMPT),
+    message = [SystemMessage(content=INPUT_GENERATOR_PROMPT),
                HumanMessage(content=f"The json with the error:{json_error}")]
 
     response = invoke_with_seed(message)
@@ -76,7 +74,7 @@ def input_generator(json_error):
 
 def description_output_generator(description, fixed_json):
     message = [
-        HumanMessage(content=DESCRIPTION_OUTPUT_PROMPT.format(description=description, json_instance=fixed_json))]
+        HumanMessage(content=DESCRIPTION_OUTPUT_GENERATOR_PROMPT.format(description=description, json_instance=fixed_json))]
 
     response = invoke_with_seed(message)
     reply = response.content

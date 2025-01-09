@@ -1,20 +1,14 @@
 import json
-import os
-from json import JSONDecodeError
 import random
-
-from dotenv import load_dotenv
+import inflect
+from json import JSONDecodeError
 from jsonschema.exceptions import ValidationError
 from jsonschema.validators import validate
-
 from config import STORY_STRUCTURE_PATH, THEME_PATH, ERRORS_PATH
-from generators import error_generator, json_schema_generator, json_generator, input_generator, \
-    description_output_generator
-from prompts import JSON_SCHEMA_EXAMPLE, SIMPLE_JSON_SCHEMA
-from utils import insert_schemas_to_arr, SCHEMAS_ARRAY, JSON_ARR_OF_ARR, insert_all_to_dict, \
-    insert_json_arr_to_arr, ARRAY_OF_DICTS, INPUT_OUTPUT_DICT
+from generators import *
+from utils import *
 from validation import json_validator, json_schema_validator
-import inflect
+
 
 if __name__ == "__main__":
     # Create an inflect engine instance

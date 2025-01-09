@@ -1,6 +1,5 @@
 import json
 from json import JSONDecodeError
-
 from jsonschema import Draft7Validator, exceptions, validate
 
 
