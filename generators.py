@@ -1,38 +1,42 @@
-import os
-from dotenv import load_dotenv
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from langchain_huggingface import HuggingFaceEndpoint, ChatHuggingFace
 from config import MODEL  # Importing the configured model name
 from prompts import *  # Importing prompt templates used for various generators
-
-# Load environment variables from a .env file
-load_dotenv()
-
-# Set Hugging Face API token as an environment variable
-HUGGINGFACE_API_TOKEN = os.getenv("HUGGINGFACEHUB_API_TOKEN")
-os.environ["HUGGINGFACEHUB_API_TOKEN"] = HUGGINGFACE_API_TOKEN
+from typing import Optional
+import yaml
+from langchain_core.prompts import PromptTemplate
 
 
-def invoke_with_seed(message):
+# Load the YAML file
+def _load_prompts(file_path: str) -> dict:
+    with open(file_path, 'r') as file:
+        return yaml.safe_load(file)
+
+
+# Load prompts
+prompts = _load_prompts("prompts.yaml")
+
+
+def _invoke_messages(messages: list, seed: Optional[int] = 43):
     """
         Invokes the Hugging Face chat model with a predefined seed and parameters.
 
         Args:
-            message (list): A list of chat messages (SystemMessage, HumanMessage, etc.)
-
+            messages (list): A list of chat messages (SystemMessage, HumanMessage, etc.)
+            seed (int) : Optional integer for model seed
         Returns:
             ChatHuggingFace response: The response from the chat model.
         """
     llm = HuggingFaceEndpoint(
-        repo_id=MODEL,  # The Hugging Face model repository ID
+        repo_id=MODEL,
         task="chat completion",
         max_new_tokens=500,
-        seed=43,
+        seed=seed,
         temperature=0.8
     )
     # Create a ChatHuggingFace instance
     chat_model = ChatHuggingFace(llm=llm)
-    return chat_model.invoke(message)
+    return chat_model.invoke(messages).content
 
 
 def json_schema_generator(story_structure, story_theme):
@@ -47,14 +51,11 @@ def json_schema_generator(story_structure, story_theme):
            str: The generated JSON schema as a string.
        """
     messages = [
-        SystemMessage(content=SCHEMA_SYSTEM_PROMPT),  # System guidance for schema generation
-        HumanMessage(content=VALID_SCHEMA_HUMAN_PROMPT),  # Instructions for valid schema
-        AIMessage(content=SIMPLE_JSON_SCHEMA),  # Example JSON schema response
-        HumanMessage(content=JSON_SCHEMA_HUMAN_PROMPT.format(theme=story_theme, structure=story_structure))
+        SystemMessage(content=prompts["schema_system_prompt"]),
+        HumanMessage(content=prompts["json_schema_human_prompt"]["template"].format(
+            theme=story_theme, structure=story_structure)),
     ]
-
-    response = invoke_with_seed(messages)
-    schema_str = response.content
+    schema_str = _invoke_messages(messages)
     return schema_str
 
 
@@ -69,11 +70,12 @@ def json_generator(json_schema, json_num):
         Returns:
             str: Generated JSON instance as a single string.
         """
-    message = [SystemMessage(content=JSON_GENERATOR_SYSTEM_PROMPT),  # System guidance for JSON generation
-               HumanMessage(content=JSON_GENERATOR_HUMAN_PROMPT.format(schema=json_schema, number=json_num))]
+    message = [
+        HumanMessage(content=prompts["json_generator_human_prompt"]["template"].format(
+            schema=json_schema, number=json_num))
+    ]
 
-    response = invoke_with_seed(message)
-    json_instance = response.content
+    json_instance = _invoke_messages(message)
     return json_instance
 
 
@@ -88,11 +90,13 @@ def error_generator(json_without_error, error_type):
         Returns:
             tuple: Description of the error and the invalid JSON instance.
         """
-    message = [SystemMessage(content=JSON_ERROR_SYSTEM_PROMPT),  # System guidance for error generation
-               HumanMessage(content=JSON_ERROR_HUMAN_PROMPT.format(json_instance=json_without_error, error=error_type))]
+    message = [
+        SystemMessage(content=prompts["json_error_system_prompt"]),
+        HumanMessage(content=prompts["json_error_human_prompt"]["template"].format(
+            json_instance=json_without_error, error=error_type)),
+    ]
 
-    response = invoke_with_seed(message)
-    reply = response.content
+    reply = _invoke_messages(message)
     try:
         description, invalid_json_instance = reply.strip().split("\n\n", 1)
         return description, invalid_json_instance
@@ -110,11 +114,12 @@ def input_generator(json_error):
        Returns:
            str: Suggested input or approach to fix the JSON error.
        """
-    message = [SystemMessage(content=INPUT_GENERATOR_PROMPT),  # System guidance for input generation
-               HumanMessage(content=f"The json with the error:{json_error}")]
+    message = [
+        SystemMessage(content=prompts["input_generator_prompt"]),
+        HumanMessage(content=f"The json with the error:{json_error}"),
+    ]
 
-    response = invoke_with_seed(message)
-    reply = response.content
+    reply = _invoke_messages(message)
     return reply
 
 
@@ -130,8 +135,9 @@ def description_output_generator(description, fixed_json):
             str: A comprehensive description of the fixed JSON.
         """
     message = [
-        HumanMessage(content=DESCRIPTION_OUTPUT_GENERATOR_PROMPT.format(description=description, json_instance=fixed_json))]
+        HumanMessage(content=prompts["description_output_generator_prompt"]["template"].format(
+            description=description, json_instance=fixed_json))
+    ]
 
-    response = invoke_with_seed(message)
-    reply = response.content
+    reply = _invoke_messages(message)
     return reply

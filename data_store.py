@@ -4,7 +4,7 @@ JSON_ARR_OF_ARR = []  # Stores two-dimensional arrays of JSON instances
 JSON_DATA_DICTS = []  # Stores dictionaries with schema, JSON instance, erroneous JSON and error details
 
 
-def insert_schemas_to_arr(schema):
+def save_schema(schema):
     """
         Inserts a JSON schema into the global SCHEMAS_ARRAY.
 
@@ -15,7 +15,7 @@ def insert_schemas_to_arr(schema):
         SCHEMAS_ARRAY.append(schema)
 
 
-def insert_json_arr_to_arr(json_arr):
+def save_jsons(json_arr):
     """
     Inserts a list of JSON instances into the global JSON_ARR_OF_ARR.
 
@@ -25,7 +25,7 @@ def insert_json_arr_to_arr(json_arr):
     JSON_ARR_OF_ARR.append(json_arr)
 
 
-def insert_all_to_dict(schema, json_instance, erroneous_json, error_desc):
+def save_json_details(schema, json_instance, erroneous_json, error_desc):
     """
         Adds schema, JSON instance, erroneous JSON, and error description as a dictionary into the global ARRAY_OF_DICTS.
 

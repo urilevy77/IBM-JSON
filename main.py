@@ -1,11 +1,20 @@
+import os
 import random
 import inflect
+from dotenv import load_dotenv
 from jsonschema.exceptions import ValidationError
 from config import STORY_STRUCTURE_PATH, THEME_PATH, ERRORS_PATH
 from generators import *
 from data_store import *
 from validation import *
 INPUT_OUTPUT_DICT = []  # Reserved for mapping inputs and outputs
+
+# Load environment variables from a .env file
+load_dotenv()
+
+# Set Hugging Face API token as an environment variable
+HUGGINGFACE_API_TOKEN = os.getenv("HUGGINGFACEHUB_API_TOKEN")
+os.environ["HUGGINGFACEHUB_API_TOKEN"] = HUGGINGFACE_API_TOKEN
 
 if __name__ == "__main__":
     # Initialize the inflect engine to convert numbers to words (e.g., "1st", "2nd")
@@ -31,7 +40,7 @@ if __name__ == "__main__":
 
                 # Validate the schema and add it to the global array if valid
                 if json_schema_validator(generated_schema):
-                    insert_schemas_to_arr(generated_schema)
+                    save_schema(generated_schema)
 
     # Step 2: Generate JSON instances for each valid schema
     # Iterate through each schema in the global schemas array
@@ -47,7 +56,7 @@ if __name__ == "__main__":
                 json_arr.append(json_file)
 
         # Store the array of JSON instances in the global JSON_ARR_OF_ARR
-        insert_json_arr_to_arr(json_arr)
+        save_jsons(json_arr)
 
     # Step 3: Generate errors for each JSON instance and validate them
     # Iterate through the schemas and corresponding JSON arrays
@@ -65,10 +74,10 @@ if __name__ == "__main__":
                             json_instance_error = json.loads(json_with_error)
                             validate(json_with_error, schema)  # Ensure the error makes the JSON invalid
                         except (JSONDecodeError, ValidationError, TypeError) as e:
-                            insert_all_to_dict(schema, json_file, json_with_error, desc)
+                            save_json_details(schema, json_file, json_with_error, desc)
 
     # Step 4: Generate user inputs and model outputs for each error
-    # counter = 0  # Counter for printing user input and model output pairs
+    counter = 0  # Counter for printing user input and model output pairs
 
     for arr_dict in JSON_DATA_DICTS:
         # Generate user input based on the erroneous JSON
@@ -92,7 +101,7 @@ if __name__ == "__main__":
             {"user input": user_input_with_json_error,
              "model output": model_output_with_json})
 
-        # # Print the user input for debugging
-        # print(f"{k})USER INPUT: {INPUT_OUTPUT_DICT[k]['user input']}")
-        # print(f"MODEL OUTPUT: {INPUT_OUTPUT_DICT[k]['model output']}")
-        # counter += 1
+        # Print the user input for debugging
+        print(f"{counter})USER INPUT: {INPUT_OUTPUT_DICT[counter]['user input']}")
+        print(f"MODEL OUTPUT: {INPUT_OUTPUT_DICT[counter]['model output']}")
+        counter += 1

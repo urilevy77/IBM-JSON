@@ -1,6 +1,8 @@
 langchain
 python-dotenv
-huggingface_hub
+huggingface-hub
 jsonschema
 langchain-huggingface
 inflect
+langchain-community
+pyyaml
