@@ -4,8 +4,8 @@
 MODEL = "mistralai/Mixtral-8x7B-Instruct-v0.1"
 
 # File paths for input and configuration data
-STORY_STRUCTURE_PATH = "textFiles/storyStructures"
-THEME_PATH = "textFiles/themes"
-ERRORS_PATH = "textFiles/errors"
+STORY_STRUCTURE_PATH = "content_idea_files/story_structures.txt"
+THEME_PATH = "content_idea_files/themes.txt"
+ERRORS_PATH = "content_idea_files/errors.txt"
 
 

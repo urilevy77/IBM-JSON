@@ -8,12 +8,13 @@ VALID_SCHEMA_HUMAN_PROMPT = """Generate a valid JSON Schema. The schema must con
 
 JSON_SCHEMA_HUMAN_PROMPT = PromptTemplate(
     template="""Generate a valid JSON Schema about {theme} with the following structure format: {structure}
-    -The schema should be valid
-    -The schema should include 20-40 fields. 
+    - The schema should be valid
+    - The schema should include 20-40 fields. 
     - Ensure all fields are properly defined with their types. 
     - Include constraints like `minLength`, `maximum`, or `enum` only when applicable. 
     - Specify the `$schema` field as `"http://json-schema.org/draft-07/schema#"` to define the version. 
-    Your response must contain only the JSON Schema. Do not include any descriptions, explanations, or additional text.""",
+    Your response must contain only the JSON Schema. Do not include any descriptions, explanations, or additional text.
+    Return the schema as a string.""",
     input_variables=["theme", "structure"],
 )
 SIMPLE_JSON_SCHEMA = """{
@@ -31,7 +32,7 @@ JSON_GENERATOR_SYSTEM_PROMPT = ("You are an AI designed to generate long and com
                                 "The schema defines the structure, types, and constraints for JSON objects. "
                                 "Always ensure the generated JSON is strictly valid according to the schema.")
 
-JSON_GENERATOR_HUMAN_PROMPT = PromptTemplate(template="Using the following schema \n{schema}\n create the {number} valid JSON instance that "
+JSON_GENERATOR_HUMAN_PROMPT = PromptTemplate(template="Using the following schema \n{schema}\n Create the {number} valid JSON instance that "
                                       "strictly adheres to the schema's rules, " \
                                       "including constraints like required fields, field types, and specified formats. " \
                                       "Ensure the JSON instance is varied but fully compliant with the schema." \
