@@ -29,6 +29,8 @@ if __name__ == "__main__":
 
     with open(ERRORS_PATH, 'r') as error_file:
         errors = [error.strip() for error in error_file]
+    count_schema_error=0
+    count_json_error=0
 
     # Step 1: Generate JSON schemas using story structures and themes
     # Read the story structure and theme files to create schemas
@@ -54,7 +56,10 @@ if __name__ == "__main__":
                                         validate(json_with_error, json.loads(generated_schema))  # Ensure the error makes the JSON invalid
                                     except (JSONDecodeError, ValidationError, TypeError) as e:
                                         save_json_details(generated_schema, json_file, json_with_error, desc)
-
+                        else:
+                            count_json_error+=1
+                else:
+                    count_schema_error+=1
     # Step 4: Generate user inputs and model outputs for each error
     counter = 0  # Counter for printing user input and model output pairs
 
@@ -94,3 +99,5 @@ if __name__ == "__main__":
             output_file.write(f"MODEL OUTPUT {counter + 1}:\n{INPUT_OUTPUT_DICT[counter]['model output']}\n")
             output_file.write("\n")  # Add a blank line for readability
         counter += 1
+    print(count_schema_error)
+    print(count_json_error)
