@@ -3,11 +3,11 @@ import random
 import inflect
 from dotenv import load_dotenv
 from jsonschema.exceptions import ValidationError
-from config import STORY_STRUCTURE_PATH, THEME_PATH, ERRORS_PATH
+from config import *
 from generators import *
 from data_store import *
 from validation import *
-INPUT_OUTPUT_DICT = []  # Reserved for mapping inputs and outputs
+
 
 # Load environment variables from a .env file
 load_dotenv()
@@ -29,6 +29,8 @@ if __name__ == "__main__":
 
     with open(ERRORS_PATH, 'r') as error_file:
         errors = [error.strip() for error in error_file]
+    count_schema_error=0
+    count_json_error=0
 
     # Step 1: Generate JSON schemas using story structures and themes
     # Read the story structure and theme files to create schemas
@@ -40,42 +42,24 @@ if __name__ == "__main__":
 
                 # Validate the schema and add it to the global array if valid
                 if json_schema_validator(generated_schema):
-                    save_schema(generated_schema)
-
-    # Step 2: Generate JSON instances for each valid schema
-    # Iterate through each schema in the global schemas array
-    for json_schema in SCHEMAS_ARRAY:
-        json_arr = []
-
-        # Generate multiple JSON instances per schema
-        for i in range(num_of_jsons):
-            json_file = json_generator(json_schema, num_to_string.ordinal(i + 1))
-
-            # Validate the generated JSON and add it to the array if valid
-            if json_validator(json_file, json_schema):
-                json_arr.append(json_file)
-
-        # Store the array of JSON instances in the global JSON_ARR_OF_ARR
-        save_jsons(json_arr)
-
-    # Step 3: Generate errors for each JSON instance and validate them
-    # Iterate through the schemas and corresponding JSON arrays
-    for i in range(len(SCHEMAS_ARRAY)):
-        for json_file in JSON_ARR_OF_ARR[i]:
-            if json_file is not None:
-                # Generate errors for each type specified in the errors file
-                for error in errors:
-                    desc, json_with_error = error_generator(json_file, error)
-                    schema = SCHEMAS_ARRAY[i]
-
-                    # Validate the generated erroneous JSON and add it to the global dictionary if invalid
-                    if desc is not None:
-                        try:
-                            json_instance_error = json.loads(json_with_error)
-                            validate(json_with_error, schema)  # Ensure the error makes the JSON invalid
-                        except (JSONDecodeError, ValidationError, TypeError) as e:
-                            save_json_details(schema, json_file, json_with_error, desc)
-
+                    # Step 2: Generate JSON instances for each valid schema
+                    for i in range(num_of_jsons):
+                        json_file = json_generator(generated_schema, num_to_string.ordinal(i + 1))
+                        if json_validator(json_file, generated_schema):
+                            # Step 3: Generate errors for each JSON instance and validate them
+                            for error in errors:
+                                desc, json_with_error = error_generator(json_file, error)
+                                # Validate the generated erroneous JSON and add it to the global dictionary if invalid
+                                if desc is not None:
+                                    try:
+                                        json_instance_error = json.loads(json_with_error)
+                                        validate(json_with_error, json.loads(generated_schema))  # Ensure the error makes the JSON invalid
+                                    except (JSONDecodeError, ValidationError, TypeError) as e:
+                                        save_json_details(generated_schema, json_file, json_with_error, desc)
+                        else:
+                            count_json_error+=1
+                else:
+                    count_schema_error+=1
     # Step 4: Generate user inputs and model outputs for each error
     counter = 0  # Counter for printing user input and model output pairs
 
@@ -101,7 +85,19 @@ if __name__ == "__main__":
             {"user input": user_input_with_json_error,
              "model output": model_output_with_json})
 
-        # Print the user input for debugging
-        print(f"{counter})USER INPUT: {INPUT_OUTPUT_DICT[counter]['user input']}")
-        print(f"MODEL OUTPUT: {INPUT_OUTPUT_DICT[counter]['model output']}")
+        # # Print the user input for debugging
+        # print(f"USER INPUT {counter + 1}: {INPUT_OUTPUT_DICT[counter]['user input']}")
+        # print(f"MODEL OUTPUT {counter + 1}: {INPUT_OUTPUT_DICT[counter]['model output']}")
+
+        # Open the file in append mode to save the data
+        with open(INPUT_LOG, "a") as input_file:
+            # Write the user input and model output to the file
+            input_file.write(f"USER INPUT {counter + 1}:\n{INPUT_OUTPUT_DICT[counter]['user input']}\n")
+            input_file.write("\n")  # Add a blank line for readability
+
+        with open(OUTPUT_LOG, "a") as output_file:
+            output_file.write(f"MODEL OUTPUT {counter + 1}:\n{INPUT_OUTPUT_DICT[counter]['model output']}\n")
+            output_file.write("\n")  # Add a blank line for readability
         counter += 1
+    print(count_schema_error)
+    print(count_json_error)
