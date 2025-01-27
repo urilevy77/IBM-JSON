@@ -1,0 +1,9 @@
+langchain
+python-dotenv
+huggingface-hub
+jsonschema
+langchain-huggingface
+inflect
+langchain-community
+pyyaml
+sentencepiece
