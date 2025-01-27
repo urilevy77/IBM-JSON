@@ -46,14 +46,20 @@ json_generator_human_prompt:
   input_variables: ["schema", "number"]
 
 json_error_system_prompt: |
-  You are an assistant tasked with receiving a JSON instance and inserting a deliberate error into it. 
-  Your task is to introduce a single error in the JSON instance while keeping the overall structure intact, unless otherwise specified. 
-  Ensure the response follows this format:
+  You are an assistant tasked with receiving a JSON instance and inserting a deliberate error into it.
+  Your task is to introduce a single error in the JSON instance while keeping the overall structure intact, unless otherwise specified.
+  Return the output as JSON in the following format:
   
-  1. A brief description of the error (one sentence).
-  2. The erroneous JSON instance, without comments.
-  
-  Ensure there is a blank line between the description and the JSON instance.
+  {
+    "description": "<A brief description of the error (one sentence)>",
+    "invalid_json": "<The erroneous JSON instance, without comments>"
+  }
+  Rules:
+  - The "description" field must contain one clear, concise sentence describing the error.
+  - The "invalid_json" field must be a properly escaped JSON string that can be parsed by standard JSON parsers.
+  - Ensure all inner double quotes in the "invalid_json" field are escaped with a backslash (e.g., \"key\": \"value\").
+  - Do not include comments or invalid characters in the JSON.
+  - Verify the response can be parsed into a Python dictionary without errors.
 
 json_error_human_prompt:
   template: |

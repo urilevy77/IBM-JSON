@@ -1,3 +1,5 @@
+import json
+
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from langchain_huggingface import HuggingFaceEndpoint, ChatHuggingFace
 from config import MODEL  # Importing the configured model name
@@ -5,7 +7,7 @@ from prompts import *  # Importing prompt templates used for various generators
 from typing import Optional
 import yaml
 from langchain_core.prompts import PromptTemplate
-
+from langchain.output_parsers import StructuredOutputParser, ResponseSchema
 
 # Load the YAML file
 def _load_prompts(file_path: str) -> dict:
@@ -81,27 +83,42 @@ def json_generator(json_schema, json_num):
 
 def error_generator(json_without_error, error_type):
     """
-        Generates an invalid JSON instance by introducing a specified error.
+    Generates an invalid JSON instance by introducing a specified error.
 
-        Args:
-            json_without_error (str): A valid JSON instance as a string.
-            error_type (str): The type of error to introduce (e.g., "missing field", "wrong format").
+    Args:
+        json_without_error (str): A valid JSON instance as a string.
+        error_type (str): The type of error to introduce (e.g., "missing field", "wrong format").
 
-        Returns:
-            tuple: Description of the error and the invalid JSON instance.
-        """
+    Returns:
+        tuple: Description of the error and the invalid JSON instance.
+    """
+    # Define the expected structure of the output
+    response_schemas = [
+        ResponseSchema(name="description", description="A brief description of the error (one sentence)."),
+        ResponseSchema(name="invalid_json", description="The erroneous JSON instance.")
+    ]
+
+    # Create the output parser with the defined response schemas
+    output_parser = StructuredOutputParser.from_response_schemas(response_schemas)
+
+    # Construct the system and human messages
     message = [
         SystemMessage(content=prompts["json_error_system_prompt"]),
         HumanMessage(content=prompts["json_error_human_prompt"]["template"].format(
             json_instance=json_without_error, error=error_type)),
     ]
 
+    # Invoke the model and parse the output
     reply = _invoke_messages(message)
     try:
-        description, invalid_json_instance = reply.strip().split("\n\n", 1)
-        return description, invalid_json_instance
-    except ValueError:
-        return None, None  # Handle unexpected response format
+        # Use the output parser to parse the response
+        parsed_output = output_parser.parse(reply)
+        if isinstance(parsed_output["invalid_json"], dict):
+            parsed_output["invalid_json"] = json.dumps(parsed_output["invalid_json"], indent=4)
+        return parsed_output["description"], parsed_output["invalid_json"]
+    except Exception as e:
+        print(f"Error parsing model response: {e}")
+        return None, None
 
 
 def input_generator(json_error):
