@@ -1,0 +1,51 @@
+Missing Required Field
+Invalid Data Type
+Extra Unspecified Field
+Invalid Field Name
+Invalid Value Format
+Null Value in Required Field
+Out of Range Value
+Empty Array for Non-Empty Field
+Array with Incorrect Data Types
+Duplicate Items in Array
+Missing Nested Object Field
+Incorrect Enum Value
+Improper Key Casing
+Improper Escaping of Characters
+Incorrect Boolean Value
+Empty String for Required Field
+Exceeding Array Length
+Invalid Numeric Precision
+Circular References
+Incorrect Nullability
+Trailing Comma in JSON
+Invalid Character in Field Name
+Unescaped Double Quotes
+Invalid Date Format
+Invalid Time Format
+Invalid JSON Syntax
+Field Value Too Short
+Field Value Too Long
+Incorrect Key Order
+Unexpected Nested Structure
+Empty Object in Non-Empty Field
+Incorrect Number of Array Elements
+Invalid File Path Format
+Incorrect IP Address Format
+Invalid URL Format
+Invalid Email Format
+Extra Comma in Array
+Extra Comma in Object
+Incorrect Data Type in Nested Field
+Unclosed Braces
+Unclosed Brackets
+Invalid Unicode Character
+Duplicate Keys in Object
+Field Value Not Matching Regex
+Excessive Nested Objects
+Array Exceeding Max Depth
+Invalid Binary Data Format
+Empty Field Value Where Disallowed
+Incorrect Parent-Child Relationship
+Mismatched Data Types in Array
+Duplicate IDs in Dataset

@@ -1,0 +1,20 @@
+Nested Lists: A list where each item contains sub-lists, allowing for hierarchical organization and drill-down.
+Hierarchical Data: A tree-like structure with parent-child relationships for organizing multi-level data.
+Simple Flat List: A single-level list of items, each represented by attributes like an identifier, title, and description.
+Optional Fields: Fields that are not mandatory, enabling flexibility in data entry and storage.
+Conditional Fields: Fields that appear based on specific conditions, reducing clutter and improving usability.
+Arrays of Objects: A structure that includes an array (list) of similar objects, allowing for multiple instances of related data.
+Dependent Fields: Fields whose values depend on another field’s selection, enabling dynamic relationships between data.
+Tabular Data: A grid-like structure where data is stored in rows and columns for easy comparison and analysis.
+Key-Value Pairs: A structure where each key is associated with a specific value, useful for simple mappings.
+Nested Objects: A primary attribute with several sub-attributes, creating a nested structure.
+Linked Data: Items containing references (links) to other items, forming relationships between datasets.
+Multi-Dimensional Arrays: Arrays where each element is another array, supporting complex multi-level data storage.
+Polymorphic Fields: Fields that can hold values of different types, such as integers, strings, or objects.
+Grouped Fields: Related fields are grouped together under a single attribute for better organization.
+Paginated Data: Data divided into pages, with metadata for navigation such as total pages and current page.
+Categorized Lists: Lists grouped by categories, where each category acts as a parent for its respective items.
+Time-Series Data: A structure where each item is associated with a timestamp, useful for sequential data analysis.
+Flat Object: A structure with no nesting, where all attributes are on the same level.
+Tree Data Structure: Data stored in a hierarchical tree format, with nodes containing pointers to their children.
+Configurable Schema: A flexible structure where fields and their constraints are defined dynamically at runtime.
