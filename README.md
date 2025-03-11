@@ -14,11 +14,17 @@ The generated dataset is useful for training models to detect and correct JSON-r
 ---
 
 ## Features
-✅ Generates structured JSON schemas dynamically based on themes and structures. \n /n
+
+✅ Generates structured JSON schemas dynamically based on themes and structures.
+
 ✅ Produces valid JSON instances from schemas.
+
 ✅ Introduces controlled errors in JSON data.
+
 ✅ Validates JSON instances against schemas.
+
 ✅ Simulates user queries for JSON correction.
+
 ✅ Provides structured input-output pairs for training LLMs.
 
 ---
