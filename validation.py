@@ -47,9 +47,10 @@ def json_validator(json_instance, json_schema):
             # Validate the JSON instance against the schema
             validate(generated_json, generated_schema)
             return True
-        except exceptions.ValidationError:
+        except exceptions.ValidationError as e:
             # JSON instance does not conform to the schema
             return False
-    except JSONDecodeError:
+    except JSONDecodeError as e:
         # JSON instance or schema string is not valid JSON
+
         return False
