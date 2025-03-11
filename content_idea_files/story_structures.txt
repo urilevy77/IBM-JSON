@@ -1,6 +1,6 @@
-Simple Flat List: A single-level list of items, each represented by attributes like an identifier, title, and description.
 Nested Lists: A list where each item contains sub-lists, allowing for hierarchical organization and drill-down.
 Hierarchical Data: A tree-like structure with parent-child relationships for organizing multi-level data.
+Simple Flat List: A single-level list of items, each represented by attributes like an identifier, title, and description.
 Optional Fields: Fields that are not mandatory, enabling flexibility in data entry and storage.
 Conditional Fields: Fields that appear based on specific conditions, reducing clutter and improving usability.
 Arrays of Objects: A structure that includes an array (list) of similar objects, allowing for multiple instances of related data.

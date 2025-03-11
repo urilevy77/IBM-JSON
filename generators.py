@@ -111,14 +111,10 @@ def error_generator(json_without_error, error_type):
     # Invoke the model and parse the output
     reply = _invoke_messages(message)
     try:
-        # Use the output parser to parse the response
-        parsed_output = output_parser.parse(reply)
-        if isinstance(parsed_output["invalid_json"], dict):
-            parsed_output["invalid_json"] = json.dumps(parsed_output["invalid_json"], indent=4)
-        return parsed_output["description"], parsed_output["invalid_json"]
-    except Exception as e:
-        print(f"Error parsing model response: {e}")
-        return None, None
+        description, invalid_json_instance = reply.strip().split("\n\n", 1)
+        return description, invalid_json_instance
+    except ValueError:
+        return None, None  # Handle unexpected response format
 
 
 def input_generator(json_error):
