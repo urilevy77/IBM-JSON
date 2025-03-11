@@ -2,8 +2,6 @@ import os
 import random
 import inflect
 from dotenv import load_dotenv
-from jsonschema.exceptions import ValidationError
-from config import *
 from generators import *
 from data_store import *
 from validation import *
@@ -24,7 +22,9 @@ def receive_parameters():
         story_structure_path = sys.argv[2]
         theme_path = sys.argv[3]
         errors_path = sys.argv[4]
-        return number_of_jsons, story_structure_path, theme_path, errors_path
+        input_log_path = sys.argv[5]
+        output_log_path = sys.argv[6]
+        return number_of_jsons, story_structure_path, theme_path, errors_path, input_log_path, output_log_path
     except IndexError:
         print("Error: Not all parameters provided. You need to pass 4 parameters.")
         sys.exit(1)
@@ -64,7 +64,7 @@ def _generate_erroneous_json(schema, json_file, errors):
                 save_json_details(schema, json_file, json_with_error, desc)
 
 
-def _generate_user_model_interactions():
+def _generate_user_model_interactions(input_log, output_log):
     """Generates user input and model output interactions based on erroneous JSONs."""
     counter = 0
     for arr_dict in JSON_DATA_DICTS:
@@ -81,16 +81,16 @@ def _generate_user_model_interactions():
 
         INPUT_OUTPUT_DICT.append({"user input": user_input_with_json_error, "model output": model_output_with_json})
 
-        with open(INPUT_LOG, "a") as input_file:
+        with open(input_log, "a") as input_file:
             input_file.write(f"USER INPUT {counter + 1}:\n{INPUT_OUTPUT_DICT[counter]['user input']}\n\n")
 
-        with open(OUTPUT_LOG, "a") as output_file:
+        with open(output_log, "a") as output_file:
             output_file.write(f"MODEL OUTPUT {counter + 1}:\n{INPUT_OUTPUT_DICT[counter]['model output']}\n\n")
 
         counter += 1
 
 
-def generation_flow(num_of_jsons, story_structure_path, theme_path, errors_path):
+def generation_flow(num_of_jsons, story_structure_path, theme_path, errors_path, input_log, output_log):
     """Handles the full data generation pipeline in a DFS manner."""
     num_to_string = inflect.engine()
 
@@ -112,10 +112,10 @@ def generation_flow(num_of_jsons, story_structure_path, theme_path, errors_path)
                     if json_file:
                         _generate_erroneous_json(schema, json_file, errors)
 
-    _generate_user_model_interactions()
+    _generate_user_model_interactions(input_log, output_log)
 
 
 if __name__ == "__main__":
-    NUM_OF_JSONS, STORY_STRUCTURE_PATH, THEME_PATH, ERRORS_PATH = receive_parameters()
+    NUM_OF_JSONS, STORY_STRUCTURE_PATH, THEME_PATH, ERRORS_PATH, INPUT_LOG, OUTPUT_LOG = receive_parameters()
     print("Started running")
-    generation_flow(NUM_OF_JSONS, STORY_STRUCTURE_PATH, THEME_PATH, ERRORS_PATH)
+    generation_flow(NUM_OF_JSONS, STORY_STRUCTURE_PATH, THEME_PATH, ERRORS_PATH, INPUT_LOG, OUTPUT_LOG)
